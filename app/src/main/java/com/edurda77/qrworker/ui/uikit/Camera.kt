@@ -18,9 +18,9 @@ fun scannerQR(
     cameraProviderFuture: ListenableFuture<ProcessCameraProvider>,
     onClick: (String) -> Unit
 ): PreviewView {
-
     val previewView = PreviewView(context)
-    val preview = Preview.Builder().build()
+    val preview = Preview.Builder()
+        .build()
     val selector = CameraSelector.Builder()
         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
         .build()
@@ -29,7 +29,8 @@ fun scannerQR(
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .setOutputImageRotationEnabled(true)
         .build()
-    imageAnalysis.setAnalyzer(
+    imageAnalysis
+        .setAnalyzer(
         ContextCompat.getMainExecutor(context),
         QrCodeAnalyzer { result ->
             onClick(result)

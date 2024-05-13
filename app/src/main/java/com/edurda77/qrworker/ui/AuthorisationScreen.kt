@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +35,7 @@ fun AuthorisationScreen(
     val isEnabledCamera = remember {
         mutableStateOf(false)
     }
+    val qrCodeBounds = remember { mutableStateOf<Rect?>(null) }
     val window = LocalView.current
     window.keepScreenOn = true
     if (isEnabledCamera.value) {
