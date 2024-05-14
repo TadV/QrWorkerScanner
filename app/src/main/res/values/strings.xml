@@ -4,4 +4,6 @@
     <string name="error">Ошибка</string>
     <string name="scanned">"Отсканировано: "</string>
     <string name="scan_pass">Отсканируйте свой пропуск</string>
+    <string name="scan_qr">Отсканируйте код</string>
+    <string name="qr_scan">Сканировать QR код</string>
 </resources>

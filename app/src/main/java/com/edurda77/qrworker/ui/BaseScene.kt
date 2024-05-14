@@ -12,8 +12,13 @@ fun BaseScene(
     val event = viewModel::onEvent
 
     when (val result = state.value.appState) {
-        AppState.WorkScan -> {
-            WorkScreen()
+        is AppState.WorkScan -> {
+            WorkScreen(
+                qrCodes = state.value.qrCodes,
+                message = state.value.message,
+                workState = result.workState,
+                event = event
+            )
         }
 
         is AppState.Authorization -> {

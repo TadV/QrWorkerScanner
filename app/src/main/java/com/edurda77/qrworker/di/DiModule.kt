@@ -1,6 +1,8 @@
 package com.edurda77.qrworker.di
 
 
+import com.edurda77.qrworker.data.repository.WorkRepositoryImpl
+import com.edurda77.qrworker.domain.repository.WorkRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -11,7 +13,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class DiModule {
 
-  /*  @Binds
+    @Binds
     @Singleton
-    abstract fun bindRepository(scannerRepositoryImpl: ScannerRepositoryImpl): ScannerRepository*/
+    abstract fun bindRepository(workRepositoryImpl: WorkRepositoryImpl): WorkRepository
 }

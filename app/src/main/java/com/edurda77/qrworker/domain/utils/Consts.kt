@@ -7,3 +7,6 @@ const val CODE_USER = "code_user"
 const val TIME_SCAN = "time_of_scan"
 const val CODE_WORK = "code_work"
 const val DB = "db_code"
+
+const val UNKNOWN_ERROR = "Неизвестная ошибка"
+const val DOUBLICAT = "Данный qr код уже отсканирован"
