@@ -10,7 +10,7 @@ const val GUID_PRODUCTION_REPORT = "production_report"
 const val IS_UPLOAD = "is_upload"
 const val DB = "db_code"
 
-const val BASE_URL = ""
+const val BASE_URL = "https://sky.pro/wiki/sql/kak-eksportirovat-dannye-my-sql-v-json-reshenie-problem/"
 
 const val UNKNOWN_ERROR = "Неизвестная ошибка"
 const val DOUBLICAT = "Данный qr код уже отсканирован"

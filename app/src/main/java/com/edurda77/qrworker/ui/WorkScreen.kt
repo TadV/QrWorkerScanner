@@ -2,6 +2,7 @@ package com.edurda77.qrworker.ui
 
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,11 @@ fun WorkScreen(
     workState: WorkState,
     event: (MainEvent) -> Unit,
 ) {
+    BackHandler {
+        if (workState is WorkState.ProcessScannerState) {
+            event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
+        }
+    }
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         ScanContract()
@@ -50,15 +56,7 @@ fun WorkScreen(
             event(MainEvent.AddNewQrCode(result.contents))
         }
     }
-    LaunchedEffect(message) {
-        if (message.isNotBlank()) {
-            Toast.makeText(
-                context,
-                context.getString(R.string.error) + message,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
+
     when (workState) {
         WorkState.ProcessScannerState -> {
             val options = ScanOptions()
@@ -71,6 +69,15 @@ fun WorkScreen(
         }
 
         WorkState.ReadyScanState -> {
+            LaunchedEffect(message) {
+                if (message.isNotBlank()) {
+                    Toast.makeText(
+                        context,
+                        message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
             Column(
                 modifier = modifier
                     .fillMaxSize()

@@ -28,7 +28,8 @@ class MainViewModel @Inject constructor(
     private fun loadQrCodes() {
         viewModelScope.launch {
            // workRepository.clearQrCodes()
-            workRepository.uploadData()
+            //workRepository.uploadData()
+           // workRepository.uploadDataAsFile()
             workRepository.getAllQrCodes().collect { resultLoad ->
                 when (resultLoad) {
                     is Resource.Error -> {
@@ -100,11 +101,6 @@ class MainViewModel @Inject constructor(
                                     message = DOUBLICAT,
                                 )
                                     .updateStateUI()
-                               /* delay(300)
-                                _state.value.copy(
-                                    message = ""
-                                )
-                                    .updateStateUI()*/
                             }
                         }
                     }
