@@ -56,11 +56,13 @@ class WorkRepositoryImpl @Inject constructor(
         timeScan: String,
         qrCode: String
     ) {
+        val items = qrCode.split("/".toRegex())
         dao.insertCode(
             CodeEntity(
                 codeUser = user,
                 timeOfScan = timeScan,
-                codeQr = qrCode
+                techOperation = items[0],
+                productionReport = if (items.size>1) items[1] else items[0]
             )
         )
     }
@@ -76,14 +78,16 @@ class WorkRepositoryImpl @Inject constructor(
             if (getSavedDate() != currentDate) {
                 try {
                     val notUploadedCodes = dao.getCodeByNotUpload().convertToCodesDto()
-                    try {
-                        val resultUpload = apiServer.uploadCodes(notUploadedCodes)
-                        if (resultUpload.isSuccessful) {
-                            dao.updateUpload()
-                            saveDate(currentDate)
+                    if (notUploadedCodes.isNotEmpty()) {
+                        try {
+                            val resultUpload = apiServer.uploadCodes(notUploadedCodes)
+                            if (resultUpload.isSuccessful) {
+                                dao.updateUpload()
+                                saveDate(currentDate)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

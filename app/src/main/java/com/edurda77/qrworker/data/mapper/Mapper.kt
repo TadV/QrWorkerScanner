@@ -9,7 +9,7 @@ fun List<CodeEntity>.convertToQrCodes(): List<QrCode> {
     return this.map { code->
         QrCode(
             id = code.id,
-            codeQr = code.codeQr,
+            codeQr = code.techOperation,
             codeUser = code.codeUser,
             timeOfScan = code.timeOfScan
         )
@@ -20,7 +20,7 @@ fun List<CodeEntity>.convertToQrCodes(): List<QrCode> {
 fun List<CodeEntity>.convertToCodesDto(): List<CodeDto> {
     return this.map { code->
         CodeDto(
-            qrCode = code.codeQr,
+            qrCode = code.techOperation,
             codeUser = code.codeUser,
             timeScan = code.timeOfScan
         )
@@ -31,7 +31,7 @@ fun CodeEntity?.convertToQrCode(): QrCode? {
     return if (this!=null) {
         QrCode(
             id = this.id,
-            codeQr = this.codeQr,
+            codeQr = this.techOperation,
             codeUser = this.codeUser,
             timeOfScan = this.timeOfScan
         )
