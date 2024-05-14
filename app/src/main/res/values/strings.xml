@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">QrWorkerScanner</string>
+    <string name="autorisation">Авторизоваться</string>
 </resources>
