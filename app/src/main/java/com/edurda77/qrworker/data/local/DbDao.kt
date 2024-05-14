@@ -21,4 +21,10 @@ interface DbDao {
 
     @Query("SELECT * FROM $TABLE WHERE CODE_WORK=:codeQr")
     suspend fun getCodeByCodeQr(codeQr:String): CodeEntity?
+
+    @Query("SELECT * FROM $TABLE WHERE IS_UPLOAD=0")
+    suspend fun getCodeByNotUpload(): List<CodeEntity>
+
+    @Query("UPDATE $TABLE SET IS_UPLOAD = 1 WHERE IS_UPLOAD=0")
+    suspend fun updateUpload()
 }

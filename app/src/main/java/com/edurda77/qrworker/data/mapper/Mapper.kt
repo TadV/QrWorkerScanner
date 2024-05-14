@@ -1,6 +1,7 @@
 package com.edurda77.qrworker.data.mapper
 
 import com.edurda77.qrworker.data.local.CodeEntity
+import com.edurda77.qrworker.data.remote.CodeDto
 import com.edurda77.qrworker.domain.model.QrCode
 
 
@@ -11,6 +12,17 @@ fun List<CodeEntity>.convertToQrCodes(): List<QrCode> {
             codeQr = code.codeQr,
             codeUser = code.codeUser,
             timeOfScan = code.timeOfScan
+        )
+    }
+}
+
+
+fun List<CodeEntity>.convertToCodesDto(): List<CodeDto> {
+    return this.map { code->
+        CodeDto(
+            qrCode = code.codeQr,
+            codeUser = code.codeUser,
+            timeScan = code.timeOfScan
         )
     }
 }

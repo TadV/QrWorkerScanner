@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.edurda77.qrworker.domain.utils.CODE_USER
 import com.edurda77.qrworker.domain.utils.CODE_WORK
 import com.edurda77.qrworker.domain.utils.ID
+import com.edurda77.qrworker.domain.utils.IS_UPLOAD
 import com.edurda77.qrworker.domain.utils.TABLE
 import com.edurda77.qrworker.domain.utils.TIME_SCAN
 
@@ -20,4 +21,6 @@ data class CodeEntity (
     val timeOfScan: String,
     @ColumnInfo(name = CODE_WORK)
     val codeQr: String,
+    @ColumnInfo(name = IS_UPLOAD)
+    val isUpload: Boolean = false,
 )

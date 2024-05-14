@@ -1,22 +1,33 @@
 package com.edurda77.qrworker.data.repository
 
 import android.app.Application
+import android.content.Context
 import com.edurda77.qrworker.data.local.CodeDatabase
 import com.edurda77.qrworker.data.local.CodeEntity
+import com.edurda77.qrworker.data.mapper.convertToCodesDto
 import com.edurda77.qrworker.data.mapper.convertToQrCode
 import com.edurda77.qrworker.data.mapper.convertToQrCodes
+import com.edurda77.qrworker.data.remote.ApiServer
 import com.edurda77.qrworker.domain.model.QrCode
 import com.edurda77.qrworker.domain.repository.WorkRepository
 import com.edurda77.qrworker.domain.utils.Resource
+import com.edurda77.qrworker.domain.utils.SHARED_DATA
+import com.edurda77.qrworker.domain.utils.SHARED_DATE
 import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
+import com.edurda77.qrworker.domain.utils.getCurrentDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WorkRepositoryImpl @Inject constructor(
+    application: Application,
+    private val apiServer: ApiServer,
     db: CodeDatabase
 ) : WorkRepository {
     private val dao = db.dbDao
+    private val sharedPref = application.getSharedPreferences(SHARED_DATA, Context.MODE_PRIVATE)
 
     override suspend fun getAllQrCodes(): Flow<Resource<List<QrCode>>> {
         return flow {
@@ -31,8 +42,8 @@ class WorkRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getQrCode(qrCode:String): Resource<QrCode?> {
-        return  try {
+    override suspend fun getQrCode(qrCode: String): Resource<QrCode?> {
+        return try {
             val result = dao.getCodeByCodeQr(qrCode)
             Resource.Success(data = result?.convertToQrCode())
         } catch (e: Exception) {
@@ -41,9 +52,10 @@ class WorkRepositoryImpl @Inject constructor(
     }
 
     override suspend fun insertQrCode(
-        user:String,
-        timeScan:String,
-        qrCode:String) {
+        user: String,
+        timeScan: String,
+        qrCode: String
+    ) {
         dao.insertCode(
             CodeEntity(
                 codeUser = user,
@@ -57,4 +69,31 @@ class WorkRepositoryImpl @Inject constructor(
         dao.clear()
     }
 
+
+    override suspend fun uploadData() {
+        val currentDate = getCurrentDate()
+        withContext(Dispatchers.IO){
+            if (getSavedDate() != currentDate) {
+                try {
+                    val notUploadedCodes = dao.getCodeByNotUpload().convertToCodesDto()
+                    try {
+                        val resultUpload = apiServer.uploadCodes(notUploadedCodes)
+                        if (resultUpload.isSuccessful) {
+                            dao.updateUpload()
+                            saveDate(currentDate)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun getSavedDate() = sharedPref.getString(SHARED_DATE, "")
+
+    private fun saveDate(date: String) =
+        sharedPref.edit().putString(SHARED_DATE, date).apply()
 }
