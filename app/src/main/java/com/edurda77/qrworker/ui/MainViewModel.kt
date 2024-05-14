@@ -25,6 +25,13 @@ class MainViewModel @Inject constructor(
                         .updateStateUI()
                 }
             }
+
+            is MainEvent.ChangeAppState -> {
+                _state.value.copy(
+                    appState = mainEvent.appState,
+                )
+                    .updateStateUI()
+            }
         }
     }
 

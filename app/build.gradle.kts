@@ -82,6 +82,7 @@ dependencies {
 
     // Zxing
     implementation (libs.core)
+    implementation (libs.zxing.android.embedded)
 }
 
 kapt{
