@@ -12,6 +12,11 @@ activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 hiltAndroidGradlePlugin = "2.51.1"
 hiltNavigationCompose = "1.2.0"
+zxingAndroidEmbedded = "4.3.0"
+roomVersion = "2.6.1"
+retrofit = "2.9.0"
+gson = "2.10.1"
+converterGson = "2.9.0"
 
 [libraries]
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
@@ -36,6 +41,16 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePlugin" }
 google-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroidGradlePlugin" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
