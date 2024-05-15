@@ -28,8 +28,11 @@ class MainViewModel @Inject constructor(
     private fun loadQrCodes() {
         viewModelScope.launch {
            // workRepository.clearQrCodes()
-            //workRepository.uploadData()
+           workRepository.uploadData()
            // workRepository.uploadDataAsFile()
+           //workRepository.directWriteToDb()
+            //workRepository.getAllRemoteCode()
+            //workRepository.sendTest()
             workRepository.getAllQrCodes().collect { resultLoad ->
                 when (resultLoad) {
                     is Resource.Error -> {

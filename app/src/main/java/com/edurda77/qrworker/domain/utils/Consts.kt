@@ -10,10 +10,14 @@ const val GUID_PRODUCTION_REPORT = "production_report"
 const val IS_UPLOAD = "is_upload"
 const val DB = "db_code"
 
-const val BASE_URL = "https://sky.pro/wiki/sql/kak-eksportirovat-dannye-my-sql-v-json-reshenie-problem/"
+const val BASE_URL = "http://192.168.0.195:5000/mssql/"
 
 const val UNKNOWN_ERROR = "Неизвестная ошибка"
 const val DOUBLICAT = "Данный qr код уже отсканирован"
 
 const val SHARED_DATA = "shared_data"
 const val SHARED_DATE = "saved_date"
+
+const val MSSQL_URL = "jdbc:jtds:sqlserver://192.168.0.195:1433/prod"
+const val LOGIN = "sa"
+const val PASSWORD = "123QWEasd"

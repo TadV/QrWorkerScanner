@@ -10,5 +10,5 @@ interface WorkRepository {
     suspend fun insertQrCode(user: String, timeScan: String, qrCode: String)
     suspend fun clearQrCodes()
     suspend fun uploadData()
-    suspend fun uploadDataAsFile()
+    suspend fun getAllRemoteCode()
 }
