@@ -82,6 +82,21 @@ dependencies {
 
     // Zxing
     implementation (libs.core)
+    implementation (libs.zxing.android.embedded)
+
+    //Room
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+
+    //Retrofit
+    implementation (libs.gson)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+
+    implementation("mysql:mysql-connector-java:8.0.33")
+    implementation(files("libs/jtds-1.2.5.jar"))
+
 }
 
 kapt{
