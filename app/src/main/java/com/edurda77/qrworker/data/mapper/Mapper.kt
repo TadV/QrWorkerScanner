@@ -11,7 +11,8 @@ fun List<CodeEntity>.convertToQrCodes(): List<QrCode> {
             id = code.id,
             codeQr = code.techOperation,
             codeUser = code.codeUser,
-            timeOfScan = code.timeOfScan
+            timeOfScan = code.timeOfScan,
+            isUpload = code.isUpload
         )
     }
 }
@@ -34,7 +35,8 @@ fun CodeEntity?.convertToQrCode(): QrCode? {
             id = this.id,
             codeQr = this.techOperation,
             codeUser = this.codeUser,
-            timeOfScan = this.timeOfScan
+            timeOfScan = this.timeOfScan,
+            isUpload = this.isUpload
         )
     } else null
 }

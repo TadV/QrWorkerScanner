@@ -77,32 +77,21 @@ class WorkRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun uploadData() {
+    override suspend fun uploadPerDayData() {
         val currentDate = getCurrentDate()
         withContext(Dispatchers.IO){
-
             if (getSavedDate() != currentDate) {
-                try {
-                    val notUploadedCodes = dao.getCodeByNotUpload().convertToCodesDto()
-                    if (notUploadedCodes.isNotEmpty()) {
-                        try {
-                            val resultUpload = apiServer.uploadCodes(notUploadedCodes)
-                            Log.d("test connect", "result remote $resultUpload")
-                            if (resultUpload.code==200) {
-                                dao.updateUpload()
-                                saveDate(currentDate)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+               uploadData(currentDate)
             }
         }
     }
 
+    override suspend fun forceUploadData() {
+        val currentDate = getCurrentDate()
+        withContext(Dispatchers.IO){
+            uploadData(currentDate)
+        }
+    }
 
     override suspend fun getAllRemoteCode() {
         try {
@@ -114,6 +103,25 @@ class WorkRepositoryImpl @Inject constructor(
         }
     }
 
+    private suspend fun uploadData(currentDate:String) {
+        try {
+            val notUploadedCodes = dao.getCodeByNotUpload().convertToCodesDto()
+            if (notUploadedCodes.isNotEmpty()) {
+                try {
+                    val resultUpload = apiServer.uploadCodes(notUploadedCodes)
+                    Log.d("test connect", "result remote $resultUpload")
+                    if (resultUpload.code==200) {
+                        dao.updateUpload()
+                        saveDate(currentDate)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     private fun getSavedDate() = sharedPref.getString(SHARED_DATE, "")
 

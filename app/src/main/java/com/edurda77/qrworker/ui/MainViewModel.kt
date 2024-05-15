@@ -7,7 +7,6 @@ import com.edurda77.qrworker.domain.utils.DOUBLICAT
 import com.edurda77.qrworker.domain.utils.Resource
 import com.edurda77.qrworker.domain.utils.getCurrentTime
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -27,12 +26,7 @@ class MainViewModel @Inject constructor(
 
     private fun loadQrCodes() {
         viewModelScope.launch {
-           // workRepository.clearQrCodes()
-           workRepository.uploadData()
-           // workRepository.uploadDataAsFile()
-           //workRepository.directWriteToDb()
-            //workRepository.getAllRemoteCode()
-            //workRepository.sendTest()
+            workRepository.uploadPerDayData()
             workRepository.getAllQrCodes().collect { resultLoad ->
                 when (resultLoad) {
                     is Resource.Error -> {
@@ -107,6 +101,12 @@ class MainViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+            }
+
+            MainEvent.UploadForce -> {
+                viewModelScope.launch {
+                    workRepository.uploadPerDayData()
                 }
             }
         }

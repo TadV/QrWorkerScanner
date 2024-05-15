@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,6 +67,15 @@ fun WorkScreen(
             options.setBeepEnabled(false)
             options.setBarcodeImageEnabled(true)
             barcodeLauncher.launch(options)
+            LaunchedEffect(message) {
+                if (message.isNotBlank()) {
+                    Toast.makeText(
+                        context,
+                        message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
 
         WorkState.ReadyScanState -> {
@@ -84,10 +94,21 @@ fun WorkScreen(
                     .padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(onClick = {
-                    event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
-                }) {
-                    Text(text = stringResource(R.string.qr_scan))
+                Row (
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ){
+                    Button(onClick = {
+                        event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
+                    }) {
+                        Text(text = stringResource(R.string.qr_scan))
+                    }
+                    Button(onClick = {
+                        event(MainEvent.UploadForce)
+                    }) {
+                        Text(text = stringResource(R.string.upload_data))
+                    }
                 }
                 Spacer(modifier = modifier.height(10.dp))
                 LazyColumn(
@@ -98,7 +119,7 @@ fun WorkScreen(
                         Card(
                             modifier = modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
-                                containerColor = Color.Gray
+                                containerColor = if (qrCode.isUpload) Color.Green else Color.Gray
                             ),
                             elevation = CardDefaults.cardElevation(
                                 defaultElevation = 20.dp

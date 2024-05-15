@@ -6,4 +6,5 @@ data class QrCode(
     val codeUser: String,
     val timeOfScan: String,
     val codeQr: String,
+    val isUpload: Boolean
 )
