@@ -1,12 +1,14 @@
 package com.edurda77.qrworker.ui
 
+import com.edurda77.qrworker.domain.model.TechOperation
 
 
 sealed class MainEvent {
     class TryAuthorization(val userNumber:String):MainEvent()
     class ChangeAppState(val appState: AppState):MainEvent()
     class ScanOpzs(val code:String):MainEvent()
-    class SelectTechOperation(val index:Int):MainEvent()
+    class SelectTechOperation(val techOperation: TechOperation):MainEvent()
     data object UploadForce:MainEvent()
     data object UploadSelectedTechOperations:MainEvent()
+    class OnSearch(val query:String):MainEvent()
 }

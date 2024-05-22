@@ -14,9 +14,11 @@ fun BaseScene(
     when (val result = state.value.appState) {
         is AppState.WorkScan -> {
             WorkScreen(
-                qrCodes = state.value.qrCodes,
+                techOperations = state.value.techOperations,
+                query = state.value.searchQuery,
                 message = state.value.message,
                 workState = result.workState,
+                user = state.value.user,
                 event = event
             )
         }

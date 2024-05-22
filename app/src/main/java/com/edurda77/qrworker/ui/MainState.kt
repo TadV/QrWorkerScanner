@@ -8,6 +8,7 @@ data class MainState (
     val opzs: String = "",
     val message:String = "",
     val techOperations: List<TechOperation> = emptyList(),
+    val searchQuery: String = "",
     //val selectableTechOperations: List<TechOperation> = emptyList(),
 )
 

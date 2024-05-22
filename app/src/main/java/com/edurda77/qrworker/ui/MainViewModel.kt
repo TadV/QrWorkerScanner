@@ -9,6 +9,7 @@ import com.edurda77.qrworker.domain.utils.getCurrentDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -20,6 +21,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private var _state = MutableStateFlow(MainState())
     val state = _state.asStateFlow()
+    private val _shadowTechOperations = MutableStateFlow<List<TechOperation>>(emptyList())
 
     init {
         viewModelScope.launch {
@@ -77,6 +79,7 @@ class MainViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
+                            _shadowTechOperations.value = result.data ?: emptyList()
                             _state.value.copy(
                                 techOperations = result.data ?: emptyList(),
                             )
@@ -96,20 +99,20 @@ class MainViewModel @Inject constructor(
             is MainEvent.SelectTechOperation -> {
                 viewModelScope.launch {
                     when (val resultLoad =
-                        workRepository.getCodeById(_state.value.techOperations[mainEvent.index].id)) {
+                        workRepository.getCodeById(mainEvent.techOperation.id)) {
                         is Resource.Error -> {
 
                         }
 
                         is Resource.Success -> {
                             if (resultLoad.data != null) {
-                                workRepository.deleteCodeById(_state.value.techOperations[mainEvent.index].id)
+                                workRepository.deleteCodeById(mainEvent.techOperation.id)
                                 //////////////
                             } else {
                                 workRepository.insertQrCode(
-                                    id = _state.value.techOperations[mainEvent.index].id,
-                                    techOperation = _state.value.techOperations[mainEvent.index].techOperation,
-                                    productionReport = _state.value.techOperations[mainEvent.index].productionReport,
+                                    id = mainEvent.techOperation.id,
+                                    techOperation = mainEvent.techOperation.techOperation,
+                                    productionReport = mainEvent.techOperation.productionReport,
                                     timeScan = getCurrentDate(),
                                     user = _state.value.user
                                 )
@@ -117,16 +120,12 @@ class MainViewModel @Inject constructor(
                             }
                         }
                     }
-                    val oldTechOperation = _state.value.techOperations[mainEvent.index]
-                    val newTechOperation =
-                        if (oldTechOperation.codeUser.isBlank()) oldTechOperation.copy(codeUser = _state.value.user) else oldTechOperation.copy(
-                            codeUser = ""
-                        )
-                    val oldOperations = _state.value.techOperations.toMutableList()
-                    oldOperations.removeAt(mainEvent.index)
-                    oldOperations.add(mainEvent.index, newTechOperation)
+                    _shadowTechOperations.value = updateVisibleTechOperations(
+                        techOperation = mainEvent.techOperation,
+                        oldTechOperations = _shadowTechOperations.value
+                    )
                     _state.value.copy(
-                        techOperations = oldOperations,
+                        techOperations = _shadowTechOperations.value,
                     )
                         .updateStateUI()
                 }
@@ -142,7 +141,37 @@ class MainViewModel @Inject constructor(
                     )
                 }
             }
+
+            is MainEvent.OnSearch -> {
+                _state.value.copy(
+                    searchQuery = mainEvent.query,
+                    techOperations = _shadowTechOperations.value.filter {
+                        it.techOperationName.contains(
+                            mainEvent.query,
+                            ignoreCase = true
+                        )
+                    }
+                )
+                    .updateStateUI()
+            }
         }
+    }
+
+    private fun updateVisibleTechOperations(
+        techOperation: TechOperation,
+        oldTechOperations: List<TechOperation>
+    ): List<TechOperation> {
+        val index =
+            oldTechOperations.indexOf(oldTechOperations.firstOrNull { it == techOperation })
+        val oldTechOperation = _state.value.techOperations[index]
+        val newTechOperation =
+            if (oldTechOperation.codeUser.isBlank()) oldTechOperation.copy(codeUser = _state.value.user) else oldTechOperation.copy(
+                codeUser = ""
+            )
+        val oldOperations = _state.value.techOperations.toMutableList()
+        oldOperations.removeAt(index)
+        oldOperations.add(index, newTechOperation)
+        return oldOperations
     }
 
     private fun MainState.updateStateUI() {
