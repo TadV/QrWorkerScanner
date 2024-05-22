@@ -17,6 +17,6 @@ interface ApiServer {
     @GET("tech-operations/{production_report}")
     suspend fun getTechOperations (@Path("production_report") orderNumber:String):OperationDto
 
-    @POST
-    suspend fun updateTechOperations(@Body techOperations: List<UpdateTechOperationBody>): Response<String>
+    @POST ("tech-operations")
+    suspend fun updateTechOperations(@Body techOperations: List<UpdateTechOperationBody>): UnswerUpdateTechOperationDto
 }

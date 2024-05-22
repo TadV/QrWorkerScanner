@@ -32,14 +32,15 @@ import com.edurda77.qrworker.ui.theme.black
 import com.edurda77.qrworker.ui.theme.grey
 import com.edurda77.qrworker.ui.theme.lightGrey
 import com.edurda77.qrworker.ui.theme.white
+import com.edurda77.qrworker.ui.theme.yellow
 
 @Preview
 @Composable
 private fun Sample1() {
     ItemTechOperation(
-        user = "",
+        user = "123123123",
         techOperation = TechOperation(
-            codeUser = "123123123",
+            codeUser = "123123124",
             createdAt = "2024-05-21T10:38:19.983Z",
             id = 1,
             orderData = "2023-10-28T00:00:00Z",
@@ -49,7 +50,9 @@ private fun Sample1() {
             productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
             techOperation = "102",
             techOperationData = "2024-05-21T11:14:00Z",
-            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования"
+            isUploadedThisUser = false,
+            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
+            currentUser = "123123124",
         ),
         event = {}
     )
@@ -71,7 +74,9 @@ private fun Sample2() {
             productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
             techOperation = "102",
             techOperationData = "2024-05-21T11:14:00Z",
-            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования"
+            isUploadedThisUser = true,
+            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
+            currentUser = "123123123"
         ),
         event = {}
     )
@@ -93,7 +98,9 @@ private fun Sample3() {
             productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
             techOperation = "102",
             techOperationData = "2024-05-21T11:14:00Z",
-            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования"
+            isUploadedThisUser = false,
+            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
+            currentUser = ""
         ),
         event = {}
     )
@@ -115,7 +122,9 @@ fun ItemTechOperation(
                 }
             },
         colors = CardDefaults.cardColors(
-            containerColor = if (techOperation.codeUser.isBlank() || techOperation.codeUser == user) {
+            containerColor = if (techOperation.isUploadedThisUser) {
+                yellow
+            } else  if (techOperation.codeUser.isBlank() || techOperation.codeUser == user) {
                 white
             } else lightGrey
         ),

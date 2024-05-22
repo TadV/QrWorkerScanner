@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -39,9 +43,11 @@ import com.edurda77.qrworker.R
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.utils.selectDate
 import com.edurda77.qrworker.ui.theme.black
+import com.edurda77.qrworker.ui.theme.blue
 import com.edurda77.qrworker.ui.theme.grey
 import com.edurda77.qrworker.ui.theme.lightBlue
 import com.edurda77.qrworker.ui.theme.lightGrey
+import com.edurda77.qrworker.ui.theme.white
 import com.edurda77.qrworker.ui.uikit.ItemTechOperation
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
@@ -106,8 +112,29 @@ fun WorkScreen(
                 modifier = modifier
                     .fillMaxSize(),
                 containerColor = lightBlue,
+                floatingActionButtonPosition = FabPosition.Center,
                 floatingActionButton = {
-
+                    Button(
+                        modifier = modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            disabledContainerColor = blue.copy(alpha = 0.5f),
+                            containerColor = blue
+                        ),
+                        enabled = techOperations.isNotEmpty(),
+                        contentPadding = PaddingValues(vertical = 10.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        onClick = {
+                            event(MainEvent.UploadSelectedTechOperations)
+                        }) {
+                        Text(
+                            text = stringResource(R.string.confirm),
+                            style = TextStyle(
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight(700),
+                                color = white,
+                            )
+                        )
+                    }
                 }
             ) { paddings ->
                 Column(

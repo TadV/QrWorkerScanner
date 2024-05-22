@@ -22,6 +22,6 @@ interface WorkRepository {
         codeUser: String
     ): Resource<List<TechOperation>>
 
-    suspend fun updateTechOperations(techOperations: List<TechOperation>, currentUser: String)
+    suspend fun updateTechOperations(techOperations: List<TechOperation>): Resource<Boolean>
     suspend fun getCodeById(id: Int): Resource<LocalTechOperation?>
 }

@@ -68,25 +68,12 @@ class MainViewModel @Inject constructor(
             }
 
             is MainEvent.ScanOpzs -> {
-                viewModelScope.launch {
-                    val result = workRepository.getTechOperations(
-                        codeUser = _state.value.user,
-                        numberOPZS = mainEvent.code
-                    )
-                    when (result) {
-                        is Resource.Error -> {
-
-                        }
-
-                        is Resource.Success -> {
-                            _shadowTechOperations.value = result.data ?: emptyList()
-                            _state.value.copy(
-                                techOperations = result.data ?: emptyList(),
-                            )
-                                .updateStateUI()
-                        }
-                    }
-                }
+                _state.value.copy(
+                    appState = AppState.WorkScan(WorkState.ReadyScanState),
+                    opzs = mainEvent.code,
+                )
+                    .updateStateUI()
+                loadTechOperations()
 
             }
 
@@ -133,12 +120,30 @@ class MainViewModel @Inject constructor(
 
             MainEvent.UploadSelectedTechOperations -> {
                 val selectedOperations =
-                    _state.value.techOperations.filter { it.codeUser == _state.value.user }
+                    _state.value.techOperations.filter { it.currentUser == _state.value.user }
                 viewModelScope.launch {
-                    workRepository.updateTechOperations(
+                    when (workRepository.updateTechOperations(
                         techOperations = selectedOperations,
-                        currentUser = _state.value.user
-                    )
+                    )) {
+                        is Resource.Error -> {
+
+                        }
+
+                        is Resource.Success -> {
+                            loadTechOperations()
+                            /* val updatedList = _shadowTechOperations.value.toMutableList()
+                             for (i in updatedList.indices) {
+                                 if (updatedList[i].codeUser==_state.value.user) {
+                                     updatedList[i] = updatedList[i].copy(isUploadedThisUser = true)
+                                 }
+                             }
+                             _shadowTechOperations.value = updatedList
+                             _state.value.copy(
+                                 techOperations = _shadowTechOperations.value,
+                             )
+                                 .updateStateUI()*/
+                        }
+                    }
                 }
             }
 
@@ -157,6 +162,32 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun loadTechOperations() {
+        viewModelScope.launch {
+            val result = workRepository.getTechOperations(
+                codeUser = _state.value.user,
+                numberOPZS = _state.value.opzs
+            )
+            when (result) {
+                is Resource.Error -> {
+                    _state.value.copy(
+                       // appState = AppState.WorkScan(WorkState.ReadyScanState),
+                    )
+                        .updateStateUI()
+                }
+
+                is Resource.Success -> {
+                    _shadowTechOperations.value = result.data ?: emptyList()
+                    _state.value.copy(
+                       // appState = AppState.WorkScan(WorkState.ReadyScanState),
+                        techOperations = result.data ?: emptyList(),
+                    )
+                        .updateStateUI()
+                }
+            }
+        }
+    }
+
     private fun updateVisibleTechOperations(
         techOperation: TechOperation,
         oldTechOperations: List<TechOperation>
@@ -165,8 +196,12 @@ class MainViewModel @Inject constructor(
             oldTechOperations.indexOf(oldTechOperations.firstOrNull { it == techOperation })
         val oldTechOperation = _state.value.techOperations[index]
         val newTechOperation =
-            if (oldTechOperation.codeUser.isBlank()) oldTechOperation.copy(codeUser = _state.value.user) else oldTechOperation.copy(
-                codeUser = ""
+            if (oldTechOperation.codeUser.isBlank()) oldTechOperation.copy(
+                codeUser = _state.value.user,
+                currentUser = _state.value.user
+            ) else oldTechOperation.copy(
+                codeUser = "",
+                currentUser = _state.value.user
             )
         val oldOperations = _state.value.techOperations.toMutableList()
         oldOperations.removeAt(index)

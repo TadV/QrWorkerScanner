@@ -76,7 +76,7 @@ fun AuthorisationScreenZxing(
             options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
             options.setPrompt(stringResource(R.string.scan_pass))
             options.setCameraId(0)
-            options.setBeepEnabled(true)
+            options.setBeepEnabled(false)
             options.setBarcodeImageEnabled(true)
             barcodeLauncher.launch(options)
         }

@@ -36,7 +36,7 @@ class WorkRepositoryImpl @Inject constructor(
         user: String,
         timeScan: String,
         techOperation: String,
-        productionReport:String
+        productionReport: String
     ) {
         dao.insertCode(
             TechOperationEntity(
@@ -48,7 +48,6 @@ class WorkRepositoryImpl @Inject constructor(
             )
         )
     }
-
 
 
     override suspend fun deleteCodeById(id: Int) {
@@ -119,7 +118,7 @@ class WorkRepositoryImpl @Inject constructor(
         return try {
             val result = apiServer.getTechOperations(numberOPZS)
             Log.d("Test repository", "result tech opert $result")
-            Resource.Success(result.convertToTechOperations())
+            Resource.Success(result.convertToTechOperations(codeUser))
         } catch (e: Exception) {
             Log.d("Test repository", "error $e")
             Resource.Error(message = e.message ?: UNKNOWN_ERROR)
@@ -127,18 +126,18 @@ class WorkRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateTechOperations(
-        techOperations: List<TechOperation>,
-        currentUser: String
-    ) {
-        try {
+        techOperations: List<TechOperation>
+    ): Resource<Boolean> {
+        return try {
+            Log.d("Test repository before send", "techOperations ${techOperations.convertToUpdateTechOperationBody()}")
             val result = apiServer.updateTechOperations(
-                techOperations = techOperations.convertToUpdateTechOperationBody(currentUser)
+                techOperations = techOperations.convertToUpdateTechOperationBody()
             )
             Log.d("Test repository", "result $result")
-            //Resource.Success(result.convertToTechOperations(codeUser))
+            Resource.Success(result.remoteData)
         } catch (e: Exception) {
             Log.d("Test repository", "error $e")
-            // Resource.Error(message = e.message ?: UNKNOWN_ERROR)
+            Resource.Error(message = e.message ?: UNKNOWN_ERROR)
         }
     }
 

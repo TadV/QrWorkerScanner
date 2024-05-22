@@ -19,6 +19,13 @@ fun getCurrentDate(): String {
 }
 
 @SuppressLint("SimpleDateFormat")
+fun getCurrentDateTime(): String {
+    val calendar = Calendar.getInstance()
+    val dateTimeFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    return dateTimeFormat.format(calendar.time)
+}
+
+@SuppressLint("SimpleDateFormat")
 fun String.selectDate(): String {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd")
     val outputFormat = SimpleDateFormat("dd MMMM yyyy")

@@ -6,6 +6,7 @@ import com.edurda77.qrworker.data.remote.OperationDto
 import com.edurda77.qrworker.data.remote.UpdateTechOperationBody
 import com.edurda77.qrworker.domain.model.LocalTechOperation
 import com.edurda77.qrworker.domain.model.TechOperation
+import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 
 
 fun List<TechOperationEntity>.convertToCodesDto(): List<DataServer> {
@@ -20,7 +21,7 @@ fun List<TechOperationEntity>.convertToCodesDto(): List<DataServer> {
 }
 
 
-fun OperationDto.convertToTechOperations(): List<TechOperation> {
+fun OperationDto.convertToTechOperations(code: String): List<TechOperation> {
     return this.remoteData.map {
         TechOperation(
             codeUser = it.codeUser,
@@ -34,18 +35,20 @@ fun OperationDto.convertToTechOperations(): List<TechOperation> {
             techOperation = it.techOperation,
             techOperationData = it.techOperationData ?: "",
             techOperationName = it.techOperationName,
+            isUploadedThisUser = code == it.codeUser,
+            currentUser = it.codeUser
         )
     }
 }
 
-fun List<TechOperation>.convertToUpdateTechOperationBody(code: String): List<UpdateTechOperationBody> {
+fun List<TechOperation>.convertToUpdateTechOperationBody(): List<UpdateTechOperationBody> {
     return this.map {
         UpdateTechOperationBody(
             codeUser = it.codeUser,
-            currentUser = code,
+            currentUser = it.currentUser,
             productionReport = it.productionReport,
             techOperation = it.techOperation,
-            techOperationData = it.techOperationData
+            techOperationData = getCurrentDateTime()
         )
     }
 }
