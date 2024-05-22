@@ -12,14 +12,14 @@ import com.edurda77.qrworker.domain.utils.TABLE
 import com.edurda77.qrworker.domain.utils.TIME_SCAN
 
 @Entity(tableName = TABLE)
-data class CodeEntity (
-    @PrimaryKey(autoGenerate = true)
+data class TechOperationEntity (
+    @PrimaryKey
     @ColumnInfo(name = ID)
-    val id: Int = 0,
+    val id: Int,
     @ColumnInfo(name = CODE_USER)
     val codeUser: String,
     @ColumnInfo(name = TIME_SCAN)
-    val timeOfScan: String,
+    val timeOfChoose: String,
     @ColumnInfo(name = GUID_TECH_OPERATION)
     val techOperation: String,
     @ColumnInfo(name = GUID_PRODUCTION_REPORT)

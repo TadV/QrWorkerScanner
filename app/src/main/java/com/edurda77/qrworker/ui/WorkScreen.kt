@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -28,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.edurda77.qrworker.R
-import com.edurda77.qrworker.domain.model.QrCode
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
@@ -54,7 +52,7 @@ fun WorkScreen(
                 .show()
         } else {
             Log.d("test view model", "screen code ${result.contents}")
-            event(MainEvent.AddNewQrCode(result.contents))
+            event(MainEvent.ScanOpzs(result.contents))
         }
     }
 

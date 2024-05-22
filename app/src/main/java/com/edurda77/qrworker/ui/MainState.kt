@@ -1,12 +1,13 @@
 package com.edurda77.qrworker.ui
 
-import com.edurda77.qrworker.domain.model.QrCode
+import com.edurda77.qrworker.domain.model.TechOperation
 
 data class MainState (
     val appState: AppState = AppState.Authorization(AuthorizationState.EnterState),
     val user:String = "",
-    val code: String = "",
+    val opzs: String = "",
     val message:String = "",
-    val qrCodes: List<QrCode> = emptyList()
+    val techOperations: List<TechOperation> = emptyList(),
+    //val selectableTechOperations: List<TechOperation> = emptyList(),
 )
 

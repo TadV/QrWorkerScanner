@@ -4,7 +4,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.Path
 
 interface ApiServer {
 
@@ -13,4 +13,10 @@ interface ApiServer {
 
     @GET("get-all-table_prod")
     suspend fun getRemoteCodes ():RemoteCodesDto
+
+    @GET("tech-operations/{production_report}")
+    suspend fun getTechOperations (@Path("production_report") orderNumber:String):OperationDto
+
+    @POST
+    suspend fun updateTechOperations(@Body techOperations: List<UpdateTechOperationBody>): Response<String>
 }

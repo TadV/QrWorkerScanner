@@ -4,12 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import com.edurda77.qrworker.data.local.CodeDatabase
-import com.edurda77.qrworker.data.local.CodeEntity
+import com.edurda77.qrworker.data.local.TechOperationEntity
 import com.edurda77.qrworker.data.mapper.convertToCodesDto
-import com.edurda77.qrworker.data.mapper.convertToQrCode
-import com.edurda77.qrworker.data.mapper.convertToQrCodes
+import com.edurda77.qrworker.data.mapper.convertToLocalTechOperation
+import com.edurda77.qrworker.data.mapper.convertToTechOperations
+import com.edurda77.qrworker.data.mapper.convertToUpdateTechOperationBody
 import com.edurda77.qrworker.data.remote.ApiServer
-import com.edurda77.qrworker.domain.model.QrCode
+import com.edurda77.qrworker.domain.model.LocalTechOperation
+import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
 import com.edurda77.qrworker.domain.utils.Resource
 import com.edurda77.qrworker.domain.utils.SHARED_DATA
@@ -17,8 +19,6 @@ import com.edurda77.qrworker.domain.utils.SHARED_DATE
 import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.getCurrentDate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -30,65 +30,53 @@ class WorkRepositoryImpl @Inject constructor(
     private val dao = db.dbDao
     private val sharedPref = application.getSharedPreferences(SHARED_DATA, Context.MODE_PRIVATE)
 
-    override suspend fun getAllQrCodes(): Flow<Resource<List<QrCode>>> {
-        return flow {
-            try {
-                val result = dao.getAllCodes()
-                result.collect { codes ->
-                    emit(Resource.Success(data = codes.convertToQrCodes()))
-                }
-            } catch (e: Exception) {
-                emit(Resource.Error(message = e.message ?: UNKNOWN_ERROR))
-            }
-        }
+
+    override suspend fun insertQrCode(
+        id: Int,
+        user: String,
+        timeScan: String,
+        techOperation: String,
+        productionReport:String
+    ) {
+        dao.insertCode(
+            TechOperationEntity(
+                id = id,
+                codeUser = user,
+                timeOfChoose = timeScan,
+                techOperation = techOperation,
+                productionReport = productionReport
+            )
+        )
     }
 
-    override suspend fun getQrCode(qrCode: String): Resource<QrCode?> {
+
+
+    override suspend fun deleteCodeById(id: Int) {
+        dao.deleteById(id)
+    }
+
+    override suspend fun getCodeById(id: Int): Resource<LocalTechOperation?> {
         return try {
-            val items = qrCode.split("/".toRegex())
-            val result = dao.getCodeByCodeQr(
-                techOperation = items[0],
-                productionReport = if (items.size>1) items[1] else items[0]
-            )
-            Resource.Success(data = result?.convertToQrCode())
+            val result = dao.getCodeById(id)
+            Resource.Success(result?.convertToLocalTechOperation())
         } catch (e: Exception) {
             Resource.Error(message = e.message ?: UNKNOWN_ERROR)
         }
     }
 
-    override suspend fun insertQrCode(
-        user: String,
-        timeScan: String,
-        qrCode: String
-    ) {
-        val items = qrCode.split("/".toRegex())
-        dao.insertCode(
-            CodeEntity(
-                codeUser = user,
-                timeOfScan = timeScan,
-                techOperation = items[0],
-                productionReport = if (items.size>1) items[1] else items[0]
-            )
-        )
-    }
-
-    override suspend fun clearQrCodes() {
-        dao.clear()
-    }
-
 
     override suspend fun uploadPerDayData() {
         val currentDate = getCurrentDate()
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             if (getSavedDate() != currentDate) {
-               uploadData(currentDate)
+                uploadData(currentDate)
             }
         }
     }
 
     override suspend fun forceUploadData() {
         val currentDate = getCurrentDate()
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             uploadData(currentDate)
         }
     }
@@ -103,14 +91,14 @@ class WorkRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun uploadData(currentDate:String) {
+    private suspend fun uploadData(currentDate: String) {
         try {
             val notUploadedCodes = dao.getCodeByNotUpload().convertToCodesDto()
             if (notUploadedCodes.isNotEmpty()) {
                 try {
                     val resultUpload = apiServer.uploadCodes(notUploadedCodes)
                     Log.d("test connect", "result remote $resultUpload")
-                    if (resultUpload.code==200) {
+                    if (resultUpload.code == 200) {
                         dao.updateUpload()
                         saveDate(currentDate)
                     }
@@ -122,6 +110,38 @@ class WorkRepositoryImpl @Inject constructor(
             e.printStackTrace()
         }
     }
+
+
+    override suspend fun getTechOperations(
+        numberOPZS: String,
+        codeUser: String,
+    ): Resource<List<TechOperation>> {
+        return try {
+            val result = apiServer.getTechOperations(numberOPZS)
+            Log.d("Test repository", "result tech opert $result")
+            Resource.Success(result.convertToTechOperations())
+        } catch (e: Exception) {
+            Log.d("Test repository", "error $e")
+            Resource.Error(message = e.message ?: UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun updateTechOperations(
+        techOperations: List<TechOperation>,
+        currentUser: String
+    ) {
+        try {
+            val result = apiServer.updateTechOperations(
+                techOperations = techOperations.convertToUpdateTechOperationBody(currentUser)
+            )
+            Log.d("Test repository", "result $result")
+            //Resource.Success(result.convertToTechOperations(codeUser))
+        } catch (e: Exception) {
+            Log.d("Test repository", "error $e")
+            // Resource.Error(message = e.message ?: UNKNOWN_ERROR)
+        }
+    }
+
 
     private fun getSavedDate() = sharedPref.getString(SHARED_DATE, "")
 
