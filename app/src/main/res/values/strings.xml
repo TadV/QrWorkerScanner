@@ -9,4 +9,5 @@
     <string name="upload_data">Выгрузить данные</string>
     <string name="order">Заказ</string>
     <string name="confirm">Подтвердить</string>
+    <string name="worker">Сотрудник:</string>
 </resources>

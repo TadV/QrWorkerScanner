@@ -1,9 +1,11 @@
 package com.edurda77.qrworker.ui.uikit
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -160,14 +163,25 @@ fun ItemTechOperation(
                     tint = grey
                 )
                 Spacer(modifier = modifier.width(10.dp))
-                Text(
-                    text = techOperation.techOperationName,
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(500),
-                        color = grey,
+                Column {
+                    Text(
+                        text = techOperation.techOperationName,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = grey,
+                        )
                     )
-                )
+                    Spacer(modifier = modifier.height(10.dp))
+                    Text(
+                        text = "${stringResource(R.string.worker)} ${techOperation.codeUser}",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = grey,
+                        )
+                    )
+                }
             }
         }
     }

@@ -138,7 +138,7 @@ fun WorkScreen(
                     .fillMaxSize(),
                 containerColor = lightBlue,
                 floatingActionButtonPosition = FabPosition.Center,
-                floatingActionButton = {
+                bottomBar = {
                     Button(
                         modifier = modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
