@@ -112,7 +112,7 @@ fun WorkScreen(
             options.setBeepEnabled(false)
             options.setBarcodeImageEnabled(true)
             barcodeLauncher.launch(options)
-            LaunchedEffect(message) {
+           /* LaunchedEffect(message) {
                 if (message.isNotBlank()) {
                     Toast.makeText(
                         context,
@@ -120,7 +120,7 @@ fun WorkScreen(
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            }
+            }*/
         }
 
         WorkState.ReadyScanState -> {
@@ -137,7 +137,6 @@ fun WorkScreen(
                 modifier = modifier
                     .fillMaxSize(),
                 containerColor = lightBlue,
-                floatingActionButtonPosition = FabPosition.Center,
                 bottomBar = {
                     Button(
                         modifier = modifier.fillMaxWidth(),

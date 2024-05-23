@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
 import com.edurda77.qrworker.domain.utils.Resource
+import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.checkConflicts
 import com.edurda77.qrworker.domain.utils.checkConflictsOperations
 import com.edurda77.qrworker.domain.utils.getCurrentDate
@@ -30,6 +31,10 @@ class MainViewModel @Inject constructor(
     fun onEvent(mainEvent: MainEvent) {
         when (mainEvent) {
             is MainEvent.TryAuthorization -> {
+                _state.value.copy(
+                    message = ""
+                )
+                    .updateStateUI()
                 if (mainEvent.userNumber.length == 13) {
                     _state.value.copy(
                         appState = AppState.WorkScan(WorkState.ReadyScanState),
@@ -50,6 +55,7 @@ class MainViewModel @Inject constructor(
                 _state.value.copy(
                     appState = AppState.WorkScan(WorkState.ReadyScanState),
                     opzs = mainEvent.code,
+                    message = "",
                 )
                     .updateStateUI()
                 loadTechOperations()
@@ -169,7 +175,8 @@ class MainViewModel @Inject constructor(
             when (result) {
                 is Resource.Error -> {
                     _state.value.copy(
-                        // appState = AppState.WorkScan(WorkState.ReadyScanState),
+                        message = result.message?: UNKNOWN_ERROR,
+                        techOperations = emptyList(),
                     )
                         .updateStateUI()
                 }
