@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.edurda77.qrworker.R
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.utils.selectDate
@@ -47,6 +50,7 @@ import com.edurda77.qrworker.ui.theme.blue
 import com.edurda77.qrworker.ui.theme.grey
 import com.edurda77.qrworker.ui.theme.lightBlue
 import com.edurda77.qrworker.ui.theme.lightGrey
+import com.edurda77.qrworker.ui.theme.red
 import com.edurda77.qrworker.ui.theme.white
 import com.edurda77.qrworker.ui.uikit.ItemTechOperation
 import com.journeyapps.barcodescanner.ScanContract
@@ -56,15 +60,18 @@ import com.journeyapps.barcodescanner.ScanOptions
 fun WorkScreen(
     modifier: Modifier = Modifier,
     techOperations: List<TechOperation>,
+    conflictTechOperations: List<TechOperation>,
     query: String,
     user: String,
     message: String,
     workState: WorkState,
+    isConflict:Boolean,
     event: (MainEvent) -> Unit,
 ) {
     BackHandler {
         event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
     }
+    val isExpanded = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         ScanContract()
@@ -75,6 +82,24 @@ fun WorkScreen(
         } else {
             Log.d("test view model", "screen code ${result.contents}")
             event(MainEvent.ScanOpzs(result.contents))
+        }
+    }
+
+    if (isExpanded.value&&isConflict) {
+        Dialog(
+            onDismissRequest = { isExpanded.value = false }) {
+            LazyColumn(
+                modifier = modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                items(conflictTechOperations) { operation ->
+                    ItemTechOperation(
+                        user = user,
+                        techOperation = operation,
+                        event = event
+                    )
+                }
+            }
         }
     }
 
@@ -232,6 +257,20 @@ fun WorkScreen(
                             event(MainEvent.OnSearch(it))
                         }
                     )
+                    if (isConflict) {
+                        Spacer(modifier = modifier.height(10.dp))
+                        IconButton(
+                            modifier = modifier,
+                            onClick = {
+                                isExpanded.value = true
+                            }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_error_outline_24),
+                                contentDescription = "",
+                                tint = red
+                            )
+                        }
+                    }
                     Spacer(modifier = modifier.height(10.dp))
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),

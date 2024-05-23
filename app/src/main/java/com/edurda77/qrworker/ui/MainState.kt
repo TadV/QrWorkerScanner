@@ -1,5 +1,6 @@
 package com.edurda77.qrworker.ui
 
+import com.edurda77.qrworker.domain.model.LocalTechOperation
 import com.edurda77.qrworker.domain.model.TechOperation
 
 data class MainState (
@@ -8,7 +9,10 @@ data class MainState (
     val opzs: String = "",
     val message:String = "",
     val techOperations: List<TechOperation> = emptyList(),
+    val conflictedTechOperations: List<TechOperation> = emptyList(),
+    val localTechOperations: List<LocalTechOperation> = emptyList(),
     val searchQuery: String = "",
+    val isConflict: Boolean = false,
     //val selectableTechOperations: List<TechOperation> = emptyList(),
 )
 

@@ -5,14 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
 import com.edurda77.qrworker.domain.utils.Resource
+import com.edurda77.qrworker.domain.utils.checkConflicts
+import com.edurda77.qrworker.domain.utils.checkConflictsOperations
 import com.edurda77.qrworker.domain.utils.getCurrentDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,28 +24,7 @@ class MainViewModel @Inject constructor(
     private val _shadowTechOperations = MutableStateFlow<List<TechOperation>>(emptyList())
 
     init {
-        viewModelScope.launch {
-            /*workRepository.updateTechOperations(
-                currentUser = "123123123",
-                techOperations = listOf(
-                    TechOperation(
-                        codeUser = "123123123",
-                        createdAt = "2024-05-21T10:38:19.983Z",
-                        id = 1,
-                        isChecked = false,
-                        isEnabled = true,
-                        orderData = "2023-10-28T00:00:00Z",
-                        orderNumber = "TRE00000908",
-                        product = "Поролон",
-                        productionDivision = "Раскройный Цех",
-                        productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
-                        techOperation = "102",
-                        techOperationData = "2024-05-21T11:14:00Z",
-                        techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования"
-                    )
-                )
-            )*/
-        }
+        loadLocalTechOperations()
     }
 
     fun onEvent(mainEvent: MainEvent) {
@@ -162,6 +141,25 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun loadLocalTechOperations() {
+        viewModelScope.launch {
+            workRepository.getAllLocalOperations().collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+
+                    }
+
+                    is Resource.Success -> {
+                        _state.value.copy(
+                            localTechOperations = result.data ?: emptyList(),
+                        )
+                            .updateStateUI()
+                    }
+                }
+            }
+        }
+    }
+
     private fun loadTechOperations() {
         viewModelScope.launch {
             val result = workRepository.getTechOperations(
@@ -171,7 +169,7 @@ class MainViewModel @Inject constructor(
             when (result) {
                 is Resource.Error -> {
                     _state.value.copy(
-                       // appState = AppState.WorkScan(WorkState.ReadyScanState),
+                        // appState = AppState.WorkScan(WorkState.ReadyScanState),
                     )
                         .updateStateUI()
                 }
@@ -179,8 +177,16 @@ class MainViewModel @Inject constructor(
                 is Resource.Success -> {
                     _shadowTechOperations.value = result.data ?: emptyList()
                     _state.value.copy(
-                       // appState = AppState.WorkScan(WorkState.ReadyScanState),
+                        // appState = AppState.WorkScan(WorkState.ReadyScanState),
                         techOperations = result.data ?: emptyList(),
+                        isConflict = checkConflicts(
+                            remoteOperations = result.data ?: emptyList(),
+                            localOperations = _state.value.localTechOperations
+                        ),
+                        conflictedTechOperations = checkConflictsOperations(
+                            remoteOperations = result.data ?: emptyList(),
+                            localOperations = _state.value.localTechOperations
+                        )
                     )
                         .updateStateUI()
                 }
@@ -208,6 +214,7 @@ class MainViewModel @Inject constructor(
         oldOperations.add(index, newTechOperation)
         return oldOperations
     }
+
 
     private fun MainState.updateStateUI() {
         _state.update {

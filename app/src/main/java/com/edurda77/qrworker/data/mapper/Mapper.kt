@@ -62,3 +62,15 @@ fun TechOperationEntity?.convertToLocalTechOperation(): LocalTechOperation? {
         timeOfChoose = this.timeOfChoose
     ) else null
 }
+
+fun List<TechOperationEntity>.convertToLocalTechOperations(): List<LocalTechOperation> {
+    return this.map {
+        LocalTechOperation(
+            codeUser = it.codeUser,
+            id = it.id,
+            productionReport = it.productionReport,
+            techOperation = it.techOperation,
+            timeOfChoose = it.timeOfChoose
+        )
+    }
+}

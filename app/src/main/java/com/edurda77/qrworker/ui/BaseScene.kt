@@ -15,10 +15,12 @@ fun BaseScene(
         is AppState.WorkScan -> {
             WorkScreen(
                 techOperations = state.value.techOperations,
+                conflictTechOperations = state.value.conflictedTechOperations,
                 query = state.value.searchQuery,
                 message = state.value.message,
                 workState = result.workState,
                 user = state.value.user,
+                isConflict = state.value.isConflict,
                 event = event
             )
         }

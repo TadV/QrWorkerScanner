@@ -7,6 +7,7 @@ import com.edurda77.qrworker.data.local.CodeDatabase
 import com.edurda77.qrworker.data.local.TechOperationEntity
 import com.edurda77.qrworker.data.mapper.convertToCodesDto
 import com.edurda77.qrworker.data.mapper.convertToLocalTechOperation
+import com.edurda77.qrworker.data.mapper.convertToLocalTechOperations
 import com.edurda77.qrworker.data.mapper.convertToTechOperations
 import com.edurda77.qrworker.data.mapper.convertToUpdateTechOperationBody
 import com.edurda77.qrworker.data.remote.ApiServer
@@ -19,6 +20,8 @@ import com.edurda77.qrworker.domain.utils.SHARED_DATE
 import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.getCurrentDate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -49,7 +52,17 @@ class WorkRepositoryImpl @Inject constructor(
         )
     }
 
-
+    override suspend fun getAllLocalOperations(): Flow<Resource<List<LocalTechOperation>>> {
+        return flow {
+            try {
+                dao.getAllCodes().collect {operations->
+                    emit(Resource.Success(operations.convertToLocalTechOperations()))
+                }
+            } catch (e: Exception) {
+                emit (Resource.Error(message = e.message ?: UNKNOWN_ERROR))
+            }
+        }
+    }
     override suspend fun deleteCodeById(id: Int) {
         dao.deleteById(id)
     }
