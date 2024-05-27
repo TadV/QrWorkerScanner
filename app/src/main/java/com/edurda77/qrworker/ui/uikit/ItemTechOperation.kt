@@ -2,6 +2,7 @@ package com.edurda77.qrworker.ui.uikit
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +58,8 @@ private fun Sample1() {
             isUploadedThisUser = false,
             techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
             currentUser = "123123124",
+            quantity = 5,
+            unit = "шт"
         ),
         event = {}
     )
@@ -79,7 +83,9 @@ private fun Sample2() {
             techOperationData = "2024-05-21T11:14:00Z",
             isUploadedThisUser = true,
             techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
-            currentUser = "123123123"
+            currentUser = "123123123",
+            quantity = 5,
+            unit = "шт"
         ),
         event = {}
     )
@@ -103,7 +109,9 @@ private fun Sample3() {
             techOperationData = "2024-05-21T11:14:00Z",
             isUploadedThisUser = false,
             techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
-            currentUser = ""
+            currentUser = "",
+            quantity = 5,
+            unit = "шт"
         ),
         event = {}
     )
@@ -144,11 +152,13 @@ fun ItemTechOperation(
         ) {
             if (techOperation.codeUser.isBlank() || techOperation.codeUser == user) {
                 Checkbox(
+                    modifier = modifier.weight(1f),
                     checked = techOperation.codeUser == user, onCheckedChange = {
                    event(MainEvent.SelectTechOperation(techOperation))
                 })
                 Spacer(modifier = modifier.width(10.dp))
                 Text(
+                    modifier = modifier.weight(6f),
                     text = techOperation.techOperationName,
                     style = TextStyle(
                         fontSize = 16.sp,
@@ -156,14 +166,46 @@ fun ItemTechOperation(
                         color = Color.Black,
                     )
                 )
+                //Spacer(modifier = modifier.weight(1f))
+                VerticalDivider(
+                    modifier = modifier.height(40.dp),
+                    thickness = 2.dp,
+                    color = Color.Black
+                )
+                Spacer(modifier = modifier.width(5.dp))
+                Column(
+                    modifier = modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = techOperation.quantity.toString(),
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color.Black,
+                        )
+                    )
+                    Spacer(modifier = modifier.height(5.dp))
+                    Text(
+                        text = techOperation.unit,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color.Black,
+                        )
+                    )
+                }
             } else {
                 Icon(
+                    modifier = modifier.weight(1f),
                     imageVector = ImageVector.vectorResource(id = R.drawable.baseline_lock_outline_24),
                     contentDescription = "",
                     tint = grey
                 )
                 Spacer(modifier = modifier.width(10.dp))
-                Column {
+                Column(
+                    modifier = modifier.weight(6f),
+                ) {
                     Text(
                         text = techOperation.techOperationName,
                         style = TextStyle(
@@ -177,6 +219,34 @@ fun ItemTechOperation(
                         text = "${stringResource(R.string.worker)} ${techOperation.codeUser}",
                         style = TextStyle(
                             fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = grey,
+                        )
+                    )
+                }
+                VerticalDivider(
+                    modifier = modifier.height(40.dp),
+                    thickness = 2.dp,
+                    color = grey
+                )
+                Spacer(modifier = modifier.width(5.dp))
+                Column(
+                    modifier = modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = techOperation.quantity.toString(),
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight(500),
+                            color = grey,
+                        )
+                    )
+                    Spacer(modifier = modifier.height(5.dp))
+                    Text(
+                        text = techOperation.unit,
+                        style = TextStyle(
+                            fontSize = 12.sp,
                             fontWeight = FontWeight(500),
                             color = grey,
                         )

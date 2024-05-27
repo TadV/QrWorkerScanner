@@ -1,5 +1,6 @@
 package com.edurda77.qrworker.domain.model
 
+
 data class TechOperation (
     val codeUser: String,
     val createdAt: String,
@@ -14,4 +15,6 @@ data class TechOperation (
     val techOperationName: String,
     val isUploadedThisUser: Boolean,
     val currentUser: String,
+    val quantity: Int,
+    val unit: String,
 )

@@ -25,5 +25,9 @@ data class RemoteData(
     @SerializedName("tech_operation_data")
     val techOperationData: String?,
     @SerializedName("tech_operation_name")
-    val techOperationName: String
+    val techOperationName: String,
+    @SerializedName("quantity")
+    val quantity: Int,
+    @SerializedName("unit")
+    val unit: String,
 )

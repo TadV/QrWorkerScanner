@@ -36,7 +36,9 @@ fun OperationDto.convertToTechOperations(code: String): List<TechOperation> {
             techOperationData = it.techOperationData ?: "",
             techOperationName = it.techOperationName,
             isUploadedThisUser = code == it.codeUser,
-            currentUser = it.codeUser
+            currentUser = it.codeUser,
+            quantity = it.quantity,
+            unit = it.unit
         )
     }
 }
