@@ -29,5 +29,5 @@ data class RemoteData(
     @SerializedName("quantity")
     val quantity: Int,
     @SerializedName("unit")
-    val unit: String,
+    val unit: String?,
 )

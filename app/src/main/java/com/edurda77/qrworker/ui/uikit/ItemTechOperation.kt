@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -147,6 +148,7 @@ fun ItemTechOperation(
         Row(
             modifier = modifier
                 .fillMaxWidth()
+                .height(IntrinsicSize.Min)
                 .padding(5.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -168,7 +170,7 @@ fun ItemTechOperation(
                 )
                 //Spacer(modifier = modifier.weight(1f))
                 VerticalDivider(
-                    modifier = modifier.height(40.dp),
+                    modifier = modifier.fillMaxHeight(),
                     thickness = 2.dp,
                     color = Color.Black
                 )
@@ -185,15 +187,17 @@ fun ItemTechOperation(
                             color = Color.Black,
                         )
                     )
-                    Spacer(modifier = modifier.height(5.dp))
-                    Text(
-                        text = techOperation.unit,
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color.Black,
+                    if (techOperation.unit!=null) {
+                        Spacer(modifier = modifier.height(5.dp))
+                        Text(
+                            text = techOperation.unit,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight(500),
+                                color = Color.Black,
+                            )
                         )
-                    )
+                    }
                 }
             } else {
                 Icon(
@@ -225,7 +229,7 @@ fun ItemTechOperation(
                     )
                 }
                 VerticalDivider(
-                    modifier = modifier.height(40.dp),
+                    modifier = modifier.fillMaxHeight(),
                     thickness = 2.dp,
                     color = grey
                 )
@@ -242,15 +246,17 @@ fun ItemTechOperation(
                             color = grey,
                         )
                     )
-                    Spacer(modifier = modifier.height(5.dp))
-                    Text(
-                        text = techOperation.unit,
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight(500),
-                            color = grey,
+                    if (techOperation.unit!=null) {
+                        Spacer(modifier = modifier.height(5.dp))
+                        Text(
+                            text = techOperation.unit,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight(500),
+                                color = grey,
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

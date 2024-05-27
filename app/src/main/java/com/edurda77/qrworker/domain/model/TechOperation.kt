@@ -16,5 +16,5 @@ data class TechOperation (
     val isUploadedThisUser: Boolean,
     val currentUser: String,
     val quantity: Int,
-    val unit: String,
+    val unit: String?,
 )

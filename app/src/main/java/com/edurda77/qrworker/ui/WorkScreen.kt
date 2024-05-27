@@ -173,7 +173,9 @@ fun WorkScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column {
+                        Column(
+                            modifier = modifier.weight(1f),
+                        ) {
                             val orderNumber = if (techOperations.isNotEmpty()) techOperations.first().orderNumber else ""
                             Text(
                                 text = "${stringResource(R.string.order)} $orderNumber",
@@ -185,29 +187,23 @@ fun WorkScreen(
                             )
                             Spacer(modifier = modifier.height(10.dp))
                             if (techOperations.isNotEmpty()) {
-                                Row(
-                                    modifier = modifier,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    //horizontalArrangement = Arrangement.SpaceAround
-                                ) {
-                                    Text(
-                                        text = techOperations.first().productionDivision,
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight(500),
-                                            color = black,
-                                        )
+                                Text(
+                                    text = techOperations.first().productionDivision,
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight(500),
+                                        color = black,
                                     )
-                                    Spacer(modifier = modifier.width(5.dp))
-                                    Text(
-                                        text = techOperations.first().orderData.selectDate(),
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight(500),
-                                            color = grey,
-                                        )
+                                )
+                                Spacer(modifier = modifier.height(5.dp))
+                                Text(
+                                    text = techOperations.first().orderData.selectDate(),
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight(500),
+                                        color = grey,
                                     )
-                                }
+                                )
                             }
                         }
                         IconButton(
