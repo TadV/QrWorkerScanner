@@ -9,6 +9,7 @@ import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.checkConflicts
 import com.edurda77.qrworker.domain.utils.checkConflictsOperations
 import com.edurda77.qrworker.domain.utils.getCurrentDate
+import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -85,7 +86,7 @@ class MainViewModel @Inject constructor(
                                     id = mainEvent.techOperation.id,
                                     techOperation = mainEvent.techOperation.techOperation,
                                     productionReport = mainEvent.techOperation.productionReport,
-                                    timeScan = getCurrentDate(),
+                                    timeScan = getCurrentDateTime(),
                                     user = _state.value.user
                                 )
                                 ///////
