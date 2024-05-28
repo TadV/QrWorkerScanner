@@ -6,4 +6,8 @@
     <string name="scan_pass">Отсканируйте свой пропуск</string>
     <string name="scan_qr">Отсканируйте код</string>
     <string name="qr_scan">Сканировать QR код</string>
+    <string name="upload_data">Выгрузить данные</string>
+    <string name="order">Заказ</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="worker">Сотрудник:</string>
 </resources>

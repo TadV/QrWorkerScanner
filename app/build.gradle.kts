@@ -94,8 +94,6 @@ dependencies {
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
 
-    implementation("mysql:mysql-connector-java:8.0.33")
-    implementation(files("libs/jtds-1.2.5.jar"))
 
 }
 

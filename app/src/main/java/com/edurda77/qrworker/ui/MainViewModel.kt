@@ -2,12 +2,15 @@ package com.edurda77.qrworker.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
-import com.edurda77.qrworker.domain.utils.DOUBLICAT
 import com.edurda77.qrworker.domain.utils.Resource
-import com.edurda77.qrworker.domain.utils.getCurrentTime
+import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
+import com.edurda77.qrworker.domain.utils.checkConflicts
+import com.edurda77.qrworker.domain.utils.checkConflictsOperations
+import com.edurda77.qrworker.domain.utils.getCurrentDate
+import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,44 +23,19 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private var _state = MutableStateFlow(MainState())
     val state = _state.asStateFlow()
+    private val _shadowTechOperations = MutableStateFlow<List<TechOperation>>(emptyList())
 
     init {
-        loadQrCodes()
-    }
-
-    private fun loadQrCodes() {
-        viewModelScope.launch {
-           // workRepository.clearQrCodes()
-           workRepository.uploadData()
-           // workRepository.uploadDataAsFile()
-           //workRepository.directWriteToDb()
-            //workRepository.getAllRemoteCode()
-            //workRepository.sendTest()
-            workRepository.getAllQrCodes().collect { resultLoad ->
-                when (resultLoad) {
-                    is Resource.Error -> {
-                        resultLoad.message?.let {
-                            _state.value.copy(
-                                message = it,
-                            )
-                                .updateStateUI()
-                        }
-                    }
-
-                    is Resource.Success -> {
-                        _state.value.copy(
-                            qrCodes = resultLoad.data ?: emptyList(),
-                        )
-                            .updateStateUI()
-                    }
-                }
-            }
-        }
+        loadLocalTechOperations()
     }
 
     fun onEvent(mainEvent: MainEvent) {
         when (mainEvent) {
             is MainEvent.TryAuthorization -> {
+                _state.value.copy(
+                    message = ""
+                )
+                    .updateStateUI()
                 if (mainEvent.userNumber.length == 13) {
                     _state.value.copy(
                         appState = AppState.WorkScan(WorkState.ReadyScanState),
@@ -74,43 +52,177 @@ class MainViewModel @Inject constructor(
                     .updateStateUI()
             }
 
-            is MainEvent.AddNewQrCode -> {
+            is MainEvent.ScanOpzs -> {
+                _state.value.copy(
+                    appState = AppState.WorkScan(WorkState.ReadyScanState),
+                    opzs = mainEvent.code,
+                    message = "",
+                )
+                    .updateStateUI()
+                loadTechOperations()
+
+            }
+
+            MainEvent.UploadForce -> {
                 viewModelScope.launch {
-                    when (val resultLoad = workRepository.getQrCode(mainEvent.code)) {
+                    workRepository.uploadPerDayData()
+                }
+            }
+
+            is MainEvent.SelectTechOperation -> {
+                viewModelScope.launch {
+                    when (val resultLoad =
+                        workRepository.getCodeById(mainEvent.techOperation.id)) {
                         is Resource.Error -> {
-                            resultLoad.message?.let {
-                                _state.value.copy(
-                                    message = it,
-                                )
-                                    .updateStateUI()
-                            }
+
                         }
 
                         is Resource.Success -> {
-                            if (resultLoad.data == null) {
-                                _state.value.copy(
-                                    message = mainEvent.code,
-                                    appState = AppState.WorkScan(WorkState.ReadyScanState)
-                                )
-                                    .updateStateUI()
-                                workRepository.insertQrCode(
-                                    user = _state.value.user,
-                                    timeScan = getCurrentTime(),
-                                    qrCode = mainEvent.code
-                                )
+                            if (resultLoad.data != null) {
+                                workRepository.deleteCodeById(mainEvent.techOperation.id)
+                                //////////////
                             } else {
-                                _state.value.copy(
-                                    appState = AppState.WorkScan(WorkState.ReadyScanState),
-                                    message = DOUBLICAT,
+                                workRepository.insertQrCode(
+                                    id = mainEvent.techOperation.id,
+                                    techOperation = mainEvent.techOperation.techOperation,
+                                    productionReport = mainEvent.techOperation.productionReport,
+                                    timeScan = getCurrentDateTime(),
+                                    user = _state.value.user
                                 )
-                                    .updateStateUI()
+                                ///////
                             }
                         }
+                    }
+                    _shadowTechOperations.value = updateVisibleTechOperations(
+                        techOperation = mainEvent.techOperation,
+                        oldTechOperations = _shadowTechOperations.value
+                    )
+                    _state.value.copy(
+                        techOperations = _shadowTechOperations.value,
+                    )
+                        .updateStateUI()
+                }
+            }
+
+            MainEvent.UploadSelectedTechOperations -> {
+                val selectedOperations =
+                    _state.value.techOperations.filter { it.currentUser == _state.value.user }
+                viewModelScope.launch {
+                    when (workRepository.updateTechOperations(
+                        techOperations = selectedOperations,
+                    )) {
+                        is Resource.Error -> {
+
+                        }
+
+                        is Resource.Success -> {
+                            loadTechOperations()
+                            /* val updatedList = _shadowTechOperations.value.toMutableList()
+                             for (i in updatedList.indices) {
+                                 if (updatedList[i].codeUser==_state.value.user) {
+                                     updatedList[i] = updatedList[i].copy(isUploadedThisUser = true)
+                                 }
+                             }
+                             _shadowTechOperations.value = updatedList
+                             _state.value.copy(
+                                 techOperations = _shadowTechOperations.value,
+                             )
+                                 .updateStateUI()*/
+                        }
+                    }
+                }
+            }
+
+            is MainEvent.OnSearch -> {
+                _state.value.copy(
+                    searchQuery = mainEvent.query,
+                    techOperations = _shadowTechOperations.value.filter {
+                        it.techOperationName.contains(
+                            mainEvent.query,
+                            ignoreCase = true
+                        )
+                    }
+                )
+                    .updateStateUI()
+            }
+        }
+    }
+
+    private fun loadLocalTechOperations() {
+        viewModelScope.launch {
+            workRepository.getAllLocalOperations().collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+
+                    }
+
+                    is Resource.Success -> {
+                        _state.value.copy(
+                            localTechOperations = result.data ?: emptyList(),
+                        )
+                            .updateStateUI()
                     }
                 }
             }
         }
     }
+
+    private fun loadTechOperations() {
+        viewModelScope.launch {
+            val result = workRepository.getTechOperations(
+                codeUser = _state.value.user,
+                numberOPZS = _state.value.opzs
+            )
+            when (result) {
+                is Resource.Error -> {
+                    _state.value.copy(
+                        message = result.message?: UNKNOWN_ERROR,
+                        techOperations = emptyList(),
+                    )
+                        .updateStateUI()
+                }
+
+                is Resource.Success -> {
+                    _shadowTechOperations.value = result.data ?: emptyList()
+                    _state.value.copy(
+                        // appState = AppState.WorkScan(WorkState.ReadyScanState),
+                        techOperations = result.data ?: emptyList(),
+                        isConflict = checkConflicts(
+                            remoteOperations = result.data ?: emptyList(),
+                            localOperations = _state.value.localTechOperations
+                        ),
+                        conflictedTechOperations = checkConflictsOperations(
+                            remoteOperations = result.data ?: emptyList(),
+                            localOperations = _state.value.localTechOperations
+                        )
+                    )
+                        .updateStateUI()
+                }
+            }
+        }
+    }
+
+    private fun updateVisibleTechOperations(
+        techOperation: TechOperation,
+        oldTechOperations: List<TechOperation>
+    ): List<TechOperation> {
+        val index =
+            oldTechOperations.indexOf(oldTechOperations.firstOrNull { it == techOperation })
+        val oldTechOperation = _state.value.techOperations[index]
+        val newTechOperation =
+            if (oldTechOperation.codeUser.isBlank()) oldTechOperation.copy(
+                codeUser = _state.value.user,
+                currentUser = _state.value.user
+            ) else oldTechOperation.copy(
+                codeUser = "",
+                currentUser = _state.value.user
+            )
+        val oldOperations = _state.value.techOperations.toMutableList()
+        oldOperations.removeAt(index)
+        oldOperations.add(index, newTechOperation)
+        return oldOperations
+    }
+
 
     private fun MainState.updateStateUI() {
         _state.update {

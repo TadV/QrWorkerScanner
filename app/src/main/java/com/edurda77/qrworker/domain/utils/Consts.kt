@@ -8,9 +8,10 @@ const val TIME_SCAN = "time_of_scan"
 const val GUID_TECH_OPERATION = "tech_operation"
 const val GUID_PRODUCTION_REPORT = "production_report"
 const val IS_UPLOAD = "is_upload"
+const val IS_CHECKED = "is_checked"
 const val DB = "db_code"
 
-const val BASE_URL = "http://192.168.0.195:5000/mssql/"
+const val BASE_URL = "http://192.168.0.195:5000/"
 
 const val UNKNOWN_ERROR = "Неизвестная ошибка"
 const val DOUBLICAT = "Данный qr код уже отсканирован"

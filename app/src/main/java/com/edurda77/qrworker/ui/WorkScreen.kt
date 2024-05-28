@@ -6,54 +6,100 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.edurda77.qrworker.R
-import com.edurda77.qrworker.domain.model.QrCode
+import com.edurda77.qrworker.domain.model.TechOperation
+import com.edurda77.qrworker.domain.utils.selectDate
+import com.edurda77.qrworker.ui.theme.black
+import com.edurda77.qrworker.ui.theme.blue
+import com.edurda77.qrworker.ui.theme.grey
+import com.edurda77.qrworker.ui.theme.lightBlue
+import com.edurda77.qrworker.ui.theme.lightGrey
+import com.edurda77.qrworker.ui.theme.red
+import com.edurda77.qrworker.ui.theme.white
+import com.edurda77.qrworker.ui.uikit.ItemTechOperation
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
 @Composable
 fun WorkScreen(
     modifier: Modifier = Modifier,
-    qrCodes: List<QrCode>,
+    techOperations: List<TechOperation>,
+    conflictTechOperations: List<TechOperation>,
+    query: String,
+    user: String,
     message: String,
     workState: WorkState,
+    isConflict:Boolean,
     event: (MainEvent) -> Unit,
 ) {
     BackHandler {
-        if (workState is WorkState.ProcessScannerState) {
-            event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
-        }
+        event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
     }
+    val isExpanded = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         ScanContract()
     ) { result ->
         if (result.contents == null) {
-         Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG)
+            Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_LONG)
                 .show()
         } else {
             Log.d("test view model", "screen code ${result.contents}")
-            event(MainEvent.AddNewQrCode(result.contents))
+            event(MainEvent.ScanOpzs(result.contents))
+        }
+    }
+
+    if (isExpanded.value&&isConflict) {
+        Dialog(
+            onDismissRequest = { isExpanded.value = false }) {
+            LazyColumn(
+                modifier = modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                items(conflictTechOperations) { operation ->
+                    ItemTechOperation(
+                        user = user,
+                        techOperation = operation,
+                        event = event
+                    )
+                }
+            }
         }
     }
 
@@ -66,6 +112,15 @@ fun WorkScreen(
             options.setBeepEnabled(false)
             options.setBarcodeImageEnabled(true)
             barcodeLauncher.launch(options)
+           /* LaunchedEffect(message) {
+                if (message.isNotBlank()) {
+                    Toast.makeText(
+                        context,
+                        message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }*/
         }
 
         WorkState.ReadyScanState -> {
@@ -78,42 +133,150 @@ fun WorkScreen(
                     ).show()
                 }
             }
-            Column(
+            Scaffold(
                 modifier = modifier
-                    .fillMaxSize()
-                    .padding(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(onClick = {
-                    event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
-                }) {
-                    Text(text = stringResource(R.string.qr_scan))
+                    .fillMaxSize(),
+                containerColor = lightBlue,
+                bottomBar = {
+                    Button(
+                        modifier = modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            disabledContainerColor = blue.copy(alpha = 0.5f),
+                            containerColor = blue
+                        ),
+                        enabled = techOperations.isNotEmpty(),
+                        contentPadding = PaddingValues(vertical = 10.dp),
+                        shape = RoundedCornerShape(15.dp),
+                        onClick = {
+                            event(MainEvent.UploadSelectedTechOperations)
+                        }) {
+                        Text(
+                            text = stringResource(R.string.confirm),
+                            style = TextStyle(
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight(700),
+                                color = white,
+                            )
+                        )
+                    }
                 }
-                Spacer(modifier = modifier.height(10.dp))
-                LazyColumn(
-                    modifier = modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(15.dp)
+            ) { paddings ->
+                Column(
+                    modifier = modifier
+                        .padding(paddings)
+                        .fillMaxSize()
+                        .padding(15.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(qrCodes) { qrCode ->
-                        Card(
-                            modifier = modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.Gray
-                            ),
-                            elevation = CardDefaults.cardElevation(
-                                defaultElevation = 20.dp
-                            ),
-                            shape = RoundedCornerShape(15.dp)
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = modifier.weight(1f),
                         ) {
-                            Column(
-                                modifier = modifier.padding(5.dp)
-                            ) {
-                                Text(text = qrCode.codeUser)
+                            val orderNumber = if (techOperations.isNotEmpty()) techOperations.first().orderNumber else ""
+                            Text(
+                                text = "${stringResource(R.string.order)} $orderNumber",
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight(700),
+                                    color = black,
+                                )
+                            )
+                            Spacer(modifier = modifier.height(10.dp))
+                            if (techOperations.isNotEmpty()) {
+                                Text(
+                                    text = techOperations.first().productionDivision,
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight(500),
+                                        color = black,
+                                    )
+                                )
                                 Spacer(modifier = modifier.height(5.dp))
-                                Text(text = qrCode.codeQr)
-                                Spacer(modifier = modifier.height(5.dp))
-                                Text(text = qrCode.timeOfScan)
+                                Text(
+                                    text = techOperations.first().orderData.selectDate(),
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight(500),
+                                        color = grey,
+                                    )
+                                )
                             }
+                        }
+                        IconButton(
+                            modifier = modifier.size(70.dp),
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = lightGrey
+                            ),
+                            onClick = {
+                                event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
+                            }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_qr_code_scanner_24),
+                                contentDescription = "",
+                                tint = black
+                            )
+                        }
+                        /*Button(onClick = {
+                            event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
+                        }) {
+                            Text(text = stringResource(R.string.qr_scan))
+                        }
+                        Button(onClick = {
+                            event(MainEvent.UploadForce)
+                        }) {
+                            Text(text = stringResource(R.string.upload_data))
+                        }*/
+                    }
+                    Spacer(modifier = modifier.height(10.dp))
+                    OutlinedTextField(
+                        modifier = modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(25.dp),
+                        textStyle = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = black,
+                        ),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_search_24),
+                                contentDescription = "",
+                                tint = black
+                            )
+                        },
+                        value = query,
+                        onValueChange = {
+                            event(MainEvent.OnSearch(it))
+                        }
+                    )
+                    if (isConflict) {
+                        Spacer(modifier = modifier.height(10.dp))
+                        IconButton(
+                            modifier = modifier,
+                            onClick = {
+                                isExpanded.value = true
+                            }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_error_outline_24),
+                                contentDescription = "",
+                                tint = red
+                            )
+                        }
+                    }
+                    Spacer(modifier = modifier.height(10.dp))
+                    LazyColumn(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        items(techOperations) { operation ->
+                            ItemTechOperation(
+                                user = user,
+                                techOperation = operation,
+                                event = event
+                            )
                         }
                     }
                 }
