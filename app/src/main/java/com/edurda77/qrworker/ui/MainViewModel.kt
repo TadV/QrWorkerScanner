@@ -141,6 +141,21 @@ class MainViewModel @Inject constructor(
                             mainEvent.query,
                             ignoreCase = true
                         )
+                                ||
+                                it.techOperation.contains(
+                                    mainEvent.query,
+                                    ignoreCase = true
+                                )
+                                ||
+                                it.techOperationData.contains(
+                                    mainEvent.query,
+                                    ignoreCase = true
+                                )
+                                ||
+                                it.codeUser.contains(
+                                    mainEvent.query,
+                                    ignoreCase = true
+                                )
                     }
                 )
                     .updateStateUI()
@@ -176,7 +191,7 @@ class MainViewModel @Inject constructor(
             when (result) {
                 is Resource.Error -> {
                     _state.value.copy(
-                        message = result.message?: UNKNOWN_ERROR,
+                        message = result.message ?: UNKNOWN_ERROR,
                         techOperations = emptyList(),
                     )
                         .updateStateUI()
