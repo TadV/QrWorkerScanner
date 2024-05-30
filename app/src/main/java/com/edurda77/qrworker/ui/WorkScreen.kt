@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -50,8 +48,8 @@ import com.edurda77.qrworker.ui.theme.blue
 import com.edurda77.qrworker.ui.theme.grey
 import com.edurda77.qrworker.ui.theme.lightBlue
 import com.edurda77.qrworker.ui.theme.lightGrey
-import com.edurda77.qrworker.ui.theme.red
 import com.edurda77.qrworker.ui.theme.white
+import com.edurda77.qrworker.ui.uikit.DialogApprovedOperations
 import com.edurda77.qrworker.ui.uikit.ItemTechOperation
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
@@ -60,6 +58,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 fun WorkScreen(
     modifier: Modifier = Modifier,
     techOperations: List<TechOperation>,
+    approvedTechOperations: List<TechOperation>,
     conflictTechOperations: List<TechOperation>,
     query: String,
     user: String,
@@ -72,6 +71,7 @@ fun WorkScreen(
         event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
     }
     val isExpanded = remember { mutableStateOf(false) }
+    val isExpandedApproved = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         ScanContract()
@@ -100,6 +100,14 @@ fun WorkScreen(
                     )
                 }
             }
+        }
+    }
+
+    if (isExpandedApproved.value) {
+        Dialog(onDismissRequest = {
+            isExpandedApproved.value = false
+        }) {
+            DialogApprovedOperations(approvedTechOperations = approvedTechOperations)
         }
     }
 
@@ -220,6 +228,24 @@ fun WorkScreen(
                                 tint = black
                             )
                         }
+                        Row(
+                            modifier = modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Button(onClick = {
+                                isExpandedApproved.value = true
+                                event(MainEvent.GetApprovedTechOperationPrevDay)
+                            }) {
+                                Text(text = stringResource(R.string.prev_day))
+                            }
+                            Button(onClick = {
+                                isExpandedApproved.value = true
+                                event(MainEvent.GetApprovedTechOperationCurrentMonth)
+                            }) {
+                                Text(text = stringResource(R.string.current_month))
+                            }
+                        }
                         /*Button(onClick = {
                             event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
                         }) {
@@ -252,7 +278,7 @@ fun WorkScreen(
                             event(MainEvent.OnSearch(it))
                         }
                     )
-                    if (isConflict) {
+                    /*if (isConflict) {
                         Spacer(modifier = modifier.height(10.dp))
                         IconButton(
                             modifier = modifier,
@@ -265,7 +291,7 @@ fun WorkScreen(
                                 tint = red
                             )
                         }
-                    }
+                    }*/
                     Spacer(modifier = modifier.height(10.dp))
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),

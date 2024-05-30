@@ -8,7 +8,6 @@ import com.edurda77.qrworker.domain.utils.Resource
 import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.checkConflicts
 import com.edurda77.qrworker.domain.utils.checkConflictsOperations
-import com.edurda77.qrworker.domain.utils.getCurrentDate
 import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -159,6 +158,14 @@ class MainViewModel @Inject constructor(
                     }
                 )
                     .updateStateUI()
+            }
+
+            MainEvent.GetApprovedTechOperationPrevDay -> {
+                // Not implemented
+            }
+
+            MainEvent.GetApprovedTechOperationCurrentMonth -> {
+                // Not implemented
             }
         }
     }

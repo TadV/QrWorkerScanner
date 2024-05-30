@@ -11,4 +11,6 @@ sealed class MainEvent {
     data object UploadForce:MainEvent()
     data object UploadSelectedTechOperations:MainEvent()
     class OnSearch(val query:String):MainEvent()
+    data object GetApprovedTechOperationPrevDay:MainEvent()
+    data object GetApprovedTechOperationCurrentMonth:MainEvent()
 }
