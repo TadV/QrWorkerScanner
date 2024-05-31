@@ -12,4 +12,5 @@
     <string name="worker">Сотрудник:</string>
     <string name="current_month">За текущий месяц</string>
     <string name="prev_day">За предыдущий день</string>
+    <string name="apply_filter">Применить фильтр</string>
 </resources>

@@ -11,10 +11,7 @@ fun BaseScene(
 ) {
     val state = viewModel.state.collectAsState()
     val event = viewModel::onEvent
-    FilterContent(
-        filtersQueries = state.value.filtersQueries,
-        event = event)
-   /* when (val result = state.value.appState) {
+    when (val result = state.value.appState) {
         is AppState.WorkScan -> {
             WorkScreen(
                 techOperations = state.value.techOperations,
@@ -23,7 +20,7 @@ fun BaseScene(
                 workState = result.workState,
                 user = state.value.user,
                 isConflict = state.value.isConflict,
-
+                filtersQueries = state.value.filtersQueries,
                 approvedTechOperations = state.value.approvedTechOperations,
                 event = event
             )
@@ -35,5 +32,5 @@ fun BaseScene(
                 event = event
             )
         }
-    }*/
+    }
 }

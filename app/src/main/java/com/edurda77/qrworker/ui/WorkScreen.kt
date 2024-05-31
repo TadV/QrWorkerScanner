@@ -14,17 +14,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -50,16 +53,19 @@ import com.edurda77.qrworker.ui.theme.lightBlue
 import com.edurda77.qrworker.ui.theme.lightGrey
 import com.edurda77.qrworker.ui.theme.white
 import com.edurda77.qrworker.ui.uikit.DialogApprovedOperations
+import com.edurda77.qrworker.ui.uikit.FilterContent
 import com.edurda77.qrworker.ui.uikit.ItemTechOperation
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkScreen(
     modifier: Modifier = Modifier,
     techOperations: List<TechOperation>,
     approvedTechOperations: List<TechOperation>,
     conflictTechOperations: List<TechOperation>,
+    filtersQueries: List<String>,
     user: String,
     message: String,
     workState: WorkState,
@@ -71,6 +77,10 @@ fun WorkScreen(
     }
     val isExpanded = remember { mutableStateOf(false) }
     val isExpandedApproved = remember { mutableStateOf(false) }
+    val showBottomSheet = remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val context = LocalContext.current
     val barcodeLauncher = rememberLauncherForActivityResult(
         ScanContract()
@@ -145,29 +155,64 @@ fun WorkScreen(
                     .fillMaxSize(),
                 containerColor = lightBlue,
                 bottomBar = {
-                    Button(
+                    Row(
                         modifier = modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            disabledContainerColor = blue.copy(alpha = 0.5f),
-                            containerColor = blue
-                        ),
-                        enabled = techOperations.isNotEmpty(),
-                        contentPadding = PaddingValues(vertical = 10.dp),
-                        shape = RoundedCornerShape(15.dp),
-                        onClick = {
-                            event(MainEvent.UploadSelectedTechOperations)
-                        }) {
-                        Text(
-                            text = stringResource(R.string.confirm),
-                            style = TextStyle(
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight(700),
-                                color = white,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Button(
+                            modifier = modifier.weight(5f),
+                            colors = ButtonDefaults.buttonColors(
+                                disabledContainerColor = blue.copy(alpha = 0.5f),
+                                containerColor = blue
+                            ),
+                            enabled = techOperations.isNotEmpty(),
+                            contentPadding = PaddingValues(vertical = 10.dp),
+                            shape = RoundedCornerShape(15.dp),
+                            onClick = {
+                                event(MainEvent.UploadSelectedTechOperations)
+                            }) {
+                            Text(
+                                text = stringResource(R.string.confirm),
+                                style = TextStyle(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight(700),
+                                    color = white,
+                                )
                             )
-                        )
+                        }
+                        Spacer(modifier = modifier.width(5.dp))
+                        IconButton(
+                            modifier = modifier.size(60.dp),
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = lightGrey
+                            ),
+                            onClick = {
+                                showBottomSheet.value = true
+                            }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_alt_24),
+                                contentDescription = "",
+                                tint = black
+                            )
+                        }
                     }
                 }
             ) { paddings ->
+                if (showBottomSheet.value) {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            showBottomSheet.value = false
+                        },
+                        sheetState = sheetState
+                    ) {
+                        FilterContent(
+                            filtersQueries = filtersQueries,
+                            showBottomSheet = showBottomSheet,
+                            sheetState = sheetState,
+                            event = event
+                        )
+                    }
+                }
                 Column(
                     modifier = modifier
                         .padding(paddings)
