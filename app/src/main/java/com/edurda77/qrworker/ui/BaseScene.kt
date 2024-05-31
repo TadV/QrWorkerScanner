@@ -3,6 +3,7 @@ package com.edurda77.qrworker.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.edurda77.qrworker.ui.uikit.FilterContent
 
 @Composable
 fun BaseScene(
@@ -10,17 +11,19 @@ fun BaseScene(
 ) {
     val state = viewModel.state.collectAsState()
     val event = viewModel::onEvent
-
-    when (val result = state.value.appState) {
+    FilterContent(
+        filtersQueries = state.value.filtersQueries,
+        event = event)
+   /* when (val result = state.value.appState) {
         is AppState.WorkScan -> {
             WorkScreen(
                 techOperations = state.value.techOperations,
                 conflictTechOperations = state.value.conflictedTechOperations,
-                query = state.value.searchQuery,
                 message = state.value.message,
                 workState = result.workState,
                 user = state.value.user,
                 isConflict = state.value.isConflict,
+
                 approvedTechOperations = state.value.approvedTechOperations,
                 event = event
             )
@@ -32,5 +35,5 @@ fun BaseScene(
                 event = event
             )
         }
-    }
+    }*/
 }

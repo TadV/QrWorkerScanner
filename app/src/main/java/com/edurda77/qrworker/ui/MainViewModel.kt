@@ -1,5 +1,6 @@
 package com.edurda77.qrworker.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.edurda77.qrworker.domain.model.TechOperation
@@ -8,6 +9,7 @@ import com.edurda77.qrworker.domain.utils.Resource
 import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.checkConflicts
 import com.edurda77.qrworker.domain.utils.checkConflictsOperations
+import com.edurda77.qrworker.domain.utils.compareLists
 import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -132,40 +134,45 @@ class MainViewModel @Inject constructor(
                 }
             }
 
-            is MainEvent.OnSearch -> {
-                _state.value.copy(
-                    searchQuery = mainEvent.query,
-                    techOperations = _shadowTechOperations.value.filter {
-                        it.techOperationName.contains(
-                            mainEvent.query,
-                            ignoreCase = true
-                        )
-                                ||
-                                it.techOperation.contains(
-                                    mainEvent.query,
-                                    ignoreCase = true
-                                )
-                                ||
-                                it.techOperationData.contains(
-                                    mainEvent.query,
-                                    ignoreCase = true
-                                )
-                                ||
-                                it.codeUser.contains(
-                                    mainEvent.query,
-                                    ignoreCase = true
-                                )
-                    }
-                )
-                    .updateStateUI()
-            }
-
             MainEvent.GetApprovedTechOperationPrevDay -> {
                 // Not implemented
             }
 
             MainEvent.GetApprovedTechOperationCurrentMonth -> {
                 // Not implemented
+            }
+
+            MainEvent.OnSearch -> {
+                val currentQueries =  _state.value.filtersQueries
+                _state.value.copy(
+                    techOperations = _shadowTechOperations.value.compareLists(currentQueries)
+                )
+                    .updateStateUI()
+            }
+            is MainEvent.AddItemInFilteredList -> {
+                val current = _state.value.filtersQueries.toMutableList()
+                current.add("")
+                _state.value.copy(
+                    filtersQueries = current,
+                )
+                    .updateStateUI()
+            }
+            is MainEvent.DeleteItemFromFilterList -> {
+                val current = _state.value.filtersQueries.toMutableList()
+                current.removeAt(mainEvent.index)
+                _state.value.copy(
+                    filtersQueries = current,
+                )
+                    .updateStateUI()
+            }
+            is MainEvent.UpdateFilteredList -> {
+                val current = _state.value.filtersQueries.toMutableList()
+                Log.d("test werty", "view model index - ${mainEvent.index}, item ${mainEvent.query}")
+                current[mainEvent.index] = mainEvent.query
+                _state.value.copy(
+                    filtersQueries = current,
+                )
+                    .updateStateUI()
             }
         }
     }

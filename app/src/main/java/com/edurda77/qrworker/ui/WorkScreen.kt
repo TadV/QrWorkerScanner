@@ -60,7 +60,6 @@ fun WorkScreen(
     techOperations: List<TechOperation>,
     approvedTechOperations: List<TechOperation>,
     conflictTechOperations: List<TechOperation>,
-    query: String,
     user: String,
     message: String,
     workState: WorkState,
@@ -240,7 +239,7 @@ fun WorkScreen(
                         }*/
                     }
                     Spacer(modifier = modifier.height(10.dp))
-                    OutlinedTextField(
+                    /*OutlinedTextField(
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(25.dp),
                         textStyle = TextStyle(
@@ -259,7 +258,7 @@ fun WorkScreen(
                         onValueChange = {
                             event(MainEvent.OnSearch(it))
                         }
-                    )
+                    )*/
                     /*if (isConflict) {
                         Spacer(modifier = modifier.height(10.dp))
                         IconButton(

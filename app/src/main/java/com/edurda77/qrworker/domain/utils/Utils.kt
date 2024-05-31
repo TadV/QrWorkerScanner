@@ -58,4 +58,6 @@ fun checkConflictsOperations(
     return conflictOperations
 }
 
+fun List<TechOperation>.compareLists(fooApiList: List<String>) = filter { m -> fooApiList.any { m.techOperation.contains(it, ignoreCase = true) } }
+
 
