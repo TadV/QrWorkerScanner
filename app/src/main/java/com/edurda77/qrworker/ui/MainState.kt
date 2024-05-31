@@ -11,7 +11,7 @@ data class MainState (
     val techOperations: List<TechOperation> = emptyList(),
     val conflictedTechOperations: List<TechOperation> = emptyList(),
     val localTechOperations: List<LocalTechOperation> = emptyList(),
-    val approvedTechOperations: List<LocalTechOperation> = emptyList(),
+    val approvedTechOperations: List<TechOperation> = emptyList(),
     val searchQuery: String = "",
     val isConflict: Boolean = false,
     //val selectableTechOperations: List<TechOperation> = emptyList(),

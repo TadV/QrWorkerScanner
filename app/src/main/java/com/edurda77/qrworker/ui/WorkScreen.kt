@@ -228,24 +228,6 @@ fun WorkScreen(
                                 tint = black
                             )
                         }
-                        Row(
-                            modifier = modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Button(onClick = {
-                                isExpandedApproved.value = true
-                                event(MainEvent.GetApprovedTechOperationPrevDay)
-                            }) {
-                                Text(text = stringResource(R.string.prev_day))
-                            }
-                            Button(onClick = {
-                                isExpandedApproved.value = true
-                                event(MainEvent.GetApprovedTechOperationCurrentMonth)
-                            }) {
-                                Text(text = stringResource(R.string.current_month))
-                            }
-                        }
                         /*Button(onClick = {
                             event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ProcessScannerState)))
                         }) {
@@ -292,6 +274,24 @@ fun WorkScreen(
                             )
                         }
                     }*/
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Button(onClick = {
+                            isExpandedApproved.value = true
+                            event(MainEvent.GetApprovedTechOperationPrevDay)
+                        }) {
+                            Text(text = stringResource(R.string.prev_day))
+                        }
+                        Button(onClick = {
+                            isExpandedApproved.value = true
+                            event(MainEvent.GetApprovedTechOperationCurrentMonth)
+                        }) {
+                            Text(text = stringResource(R.string.current_month))
+                        }
+                    }
                     Spacer(modifier = modifier.height(10.dp))
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),

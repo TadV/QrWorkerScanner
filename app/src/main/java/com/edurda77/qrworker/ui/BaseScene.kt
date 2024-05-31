@@ -21,6 +21,7 @@ fun BaseScene(
                 workState = result.workState,
                 user = state.value.user,
                 isConflict = state.value.isConflict,
+                approvedTechOperations = state.value.approvedTechOperations,
                 event = event
             )
         }
