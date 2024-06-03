@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">QrWorkerScanner</string>
+    <string name="autorisation">Авторизоваться</string>
+    <string name="error">Ошибка</string>
+    <string name="scanned">"Отсканировано: "</string>
+    <string name="scan_pass">Отсканируйте свой пропуск</string>
+    <string name="scan_qr">Отсканируйте код</string>
+    <string name="qr_scan">Сканировать QR код</string>
+    <string name="upload_data">Выгрузить данные</string>
+    <string name="order">Заказ</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="worker">Сотрудник:</string>
+    <string name="current_month">За текущий месяц</string>
+    <string name="prev_day">За предыдущий день</string>
+    <string name="apply_filter">Применить фильтр</string>
 </resources>
