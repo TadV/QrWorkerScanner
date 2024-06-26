@@ -21,3 +21,20 @@ data class RemoteUnswerDto(
     @SerializedName("message")
     val message: String
 )
+
+
+data class RemoteWorkerDto(
+    @SerializedName("code")
+    val code: Int,
+    @SerializedName("data")
+    val dataServer: WorkerDto?,
+    @SerializedName("message")
+    val message: String
+)
+
+data class WorkerDto(
+    @SerializedName("worker_code")
+    val workerCode: String,
+    @SerializedName("worker_fio")
+    val workerFio: String,
+)

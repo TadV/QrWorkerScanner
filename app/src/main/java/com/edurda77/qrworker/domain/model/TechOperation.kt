@@ -15,6 +15,7 @@ data class TechOperation (
     val techOperationName: String,
     val isUploadedThisUser: Boolean,
     val currentUser: String,
+    val currentUserFIO: String,
     val quantity: Int,
     val unit: String?,
 )

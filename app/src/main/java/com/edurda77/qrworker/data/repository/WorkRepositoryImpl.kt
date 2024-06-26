@@ -11,6 +11,7 @@ import com.edurda77.qrworker.data.mapper.convertToLocalTechOperations
 import com.edurda77.qrworker.data.mapper.convertToTechOperations
 import com.edurda77.qrworker.data.mapper.convertToUpdateTechOperationBody
 import com.edurda77.qrworker.data.remote.ApiServer
+import com.edurda77.qrworker.data.remote.RemoteWorkerDto
 import com.edurda77.qrworker.domain.model.LocalTechOperation
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
@@ -100,6 +101,19 @@ class WorkRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d("test connect", "error: $e")
+        }
+    }
+
+    override suspend fun getWorkerFIO(workerCode: String): Resource<RemoteWorkerDto> {
+        return try {
+            Log.d("getWorkerFIO", "workerCode $workerCode")
+            val result = apiServer.getWorkerFio(workerCode)
+            Log.d("getWorkerFIO", "result remote $result")
+            Resource.Success(result)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d("getWorkerFIO", "error: $e")
+            Resource.Error(message = e.message ?: UNKNOWN_ERROR)
         }
     }
 

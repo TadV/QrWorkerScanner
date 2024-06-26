@@ -40,84 +40,6 @@ import com.edurda77.qrworker.ui.theme.lightGrey
 import com.edurda77.qrworker.ui.theme.white
 import com.edurda77.qrworker.ui.theme.yellow
 
-@Preview
-@Composable
-private fun Sample1() {
-    ItemTechOperation(
-        user = "123123123",
-        techOperation = TechOperation(
-            codeUser = "123123124",
-            createdAt = "2024-05-21T10:38:19.983Z",
-            id = 1,
-            orderData = "2023-10-28T00:00:00Z",
-            orderNumber = "TRE00000908",
-            product = "Поролон",
-            productionDivision = "Раскройный Цех",
-            productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
-            techOperation = "102",
-            techOperationData = "2024-05-21T11:14:00Z",
-            isUploadedThisUser = false,
-            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
-            currentUser = "123123124",
-            quantity = 5,
-            unit = "шт"
-        ),
-        event = {}
-    )
-}
-
-@Preview
-@Composable
-private fun Sample2() {
-    ItemTechOperation(
-        user = "123123123",
-        techOperation = TechOperation(
-            codeUser = "123123123",
-            createdAt = "2024-05-21T10:38:19.983Z",
-            id = 1,
-            orderData = "2023-10-28T00:00:00Z",
-            orderNumber = "TRE00000908",
-            product = "Поролон",
-            productionDivision = "Раскройный Цех",
-            productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
-            techOperation = "102",
-            techOperationData = "2024-05-21T11:14:00Z",
-            isUploadedThisUser = true,
-            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
-            currentUser = "123123123",
-            quantity = 5,
-            unit = "шт"
-        ),
-        event = {}
-    )
-}
-
-@Preview
-@Composable
-private fun Sample3() {
-    ItemTechOperation(
-        user = "123123123",
-        techOperation = TechOperation(
-            codeUser = "",
-            createdAt = "2024-05-21T10:38:19.983Z",
-            id = 1,
-            orderData = "2023-10-28T00:00:00Z",
-            orderNumber = "TRE00000908",
-            product = "Поролон",
-            productionDivision = "Раскройный Цех",
-            productionReport = "5b712337-7d6d-11ee-96f7-9440c9fe75e0",
-            techOperation = "102",
-            techOperationData = "2024-05-21T11:14:00Z",
-            isUploadedThisUser = false,
-            techOperationName = "102 Транспортировка деталей в ячейку стеллажа для комплектования",
-            currentUser = "",
-            quantity = 5,
-            unit = "шт"
-        ),
-        event = {}
-    )
-}
-
 @Composable
 fun ItemTechOperation(
     modifier: Modifier = Modifier,
@@ -220,7 +142,7 @@ fun ItemTechOperation(
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     Text(
-                        text = "${stringResource(R.string.worker)} ${techOperation.codeUser}",
+                        text = "${stringResource(R.string.worker)} ${techOperation.currentUserFIO}",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight(500),

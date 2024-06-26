@@ -13,6 +13,9 @@ interface ApiServer {
     @GET("get-all-table_prod")
     suspend fun getRemoteCodes ():RemoteCodesDto
 
+    @GET("/workers/{worker_code}")
+    suspend fun getWorkerFio (@Path("worker_code") workerCode:String):RemoteWorkerDto
+
     @GET("tech-operations/{production_report}")
     suspend fun getTechOperations (@Path("production_report") orderNumber:String):OperationDto
 

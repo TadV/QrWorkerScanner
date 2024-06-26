@@ -1,5 +1,6 @@
 package com.edurda77.qrworker.domain.repository
 
+import com.edurda77.qrworker.data.remote.RemoteWorkerDto
 import com.edurda77.qrworker.domain.model.LocalTechOperation
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.utils.Resource
@@ -17,6 +18,7 @@ interface WorkRepository {
     suspend fun deleteCodeById(id: Int)
     suspend fun uploadPerDayData()
     suspend fun getAllRemoteCode()
+    suspend fun getWorkerFIO(workerCode: String): Resource<RemoteWorkerDto>
     suspend fun forceUploadData()
     suspend fun getTechOperations(
         numberOPZS: String,

@@ -39,6 +39,23 @@ class MainViewModel @Inject constructor(
                 )
                     .updateStateUI()
                 if (mainEvent.userNumber.length == 13) {
+                    viewModelScope.launch {
+                        when (val result = workRepository.getWorkerFIO(mainEvent.userNumber)) {
+                            is Resource.Error -> {
+
+                            }
+
+                            is Resource.Success -> {
+                                if (result.data != null) {
+                                    println(result.data)
+//                                    _state.value.copy(
+//                                        userName = ,
+//                                    )
+//                                        .updateStateUI()
+                                }
+                            }
+                        }
+                    }
                     _state.value.copy(
                         appState = AppState.WorkScan(WorkState.ReadyScanState),
                         user = mainEvent.userNumber

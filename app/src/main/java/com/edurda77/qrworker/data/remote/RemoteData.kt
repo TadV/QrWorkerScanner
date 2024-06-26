@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName
 data class RemoteData(
     @SerializedName("code_user")
     val codeUser: String,
+    @SerializedName("fio_user")
+    val fioUser: String?,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("id")
