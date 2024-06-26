@@ -14,11 +14,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.edurda77.qrworker.ui.theme.QrWorkerScannerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import android.view.WindowManager
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this@MainActivity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         //enableEdgeToEdge()
         setContent {
             QrWorkerScannerTheme {

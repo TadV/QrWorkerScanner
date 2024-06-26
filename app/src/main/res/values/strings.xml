@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QrWorkerScanner</string>
+    <string name="app_name">Учёт ОПЗС</string>
     <string name="autorisation">Авторизоваться</string>
     <string name="error">Ошибка</string>
     <string name="scanned">"Отсканировано: "</string>

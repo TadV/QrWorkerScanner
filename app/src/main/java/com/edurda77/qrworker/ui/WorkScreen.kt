@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -75,6 +76,7 @@ fun WorkScreen(
     BackHandler {
         event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
     }
+    var query = remember { mutableStateOf("") }
     val isExpanded = remember { mutableStateOf(false) }
     val isExpandedApproved = remember { mutableStateOf(false) }
     val showBottomSheet = remember { mutableStateOf(false) }
@@ -156,7 +158,7 @@ fun WorkScreen(
                 containerColor = lightBlue,
                 bottomBar = {
                     Row(
-                        modifier = modifier.fillMaxWidth(),
+                        modifier = modifier.fillMaxWidth().padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Button(
@@ -180,21 +182,21 @@ fun WorkScreen(
                                 )
                             )
                         }
-                        Spacer(modifier = modifier.width(5.dp))
-                        IconButton(
-                            modifier = modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = lightGrey
-                            ),
-                            onClick = {
-                                showBottomSheet.value = true
-                            }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_alt_24),
-                                contentDescription = "",
-                                tint = black
-                            )
-                        }
+//                        Spacer(modifier = modifier.width(5.dp))
+//                        IconButton(
+//                            modifier = modifier.size(60.dp),
+//                            colors = IconButtonDefaults.iconButtonColors(
+//                                containerColor = lightGrey
+//                            ),
+//                            onClick = {
+//                                showBottomSheet.value = true
+//                            }) {
+//                            Icon(
+//                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_filter_alt_24),
+//                                contentDescription = "",
+//                                tint = black
+//                            )
+//                        }
                     }
                 }
             ) { paddings ->
@@ -284,7 +286,7 @@ fun WorkScreen(
                         }*/
                     }
                     Spacer(modifier = modifier.height(10.dp))
-                    /*OutlinedTextField(
+                    OutlinedTextField(
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(25.dp),
                         textStyle = TextStyle(
@@ -299,11 +301,12 @@ fun WorkScreen(
                                 tint = black
                             )
                         },
-                        value = query,
+                        value = query.value,
                         onValueChange = {
+                            query.value = it
                             event(MainEvent.OnSearch(it))
                         }
-                    )*/
+                    )
                     /*if (isConflict) {
                         Spacer(modifier = modifier.height(10.dp))
                         IconButton(
@@ -318,24 +321,24 @@ fun WorkScreen(
                             )
                         }
                     }*/
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Button(onClick = {
-                            isExpandedApproved.value = true
-                            event(MainEvent.GetApprovedTechOperationPrevDay)
-                        }) {
-                            Text(text = stringResource(R.string.prev_day))
-                        }
-                        Button(onClick = {
-                            isExpandedApproved.value = true
-                            event(MainEvent.GetApprovedTechOperationCurrentMonth)
-                        }) {
-                            Text(text = stringResource(R.string.current_month))
-                        }
-                    }
+//                    Row(
+//                        modifier = modifier.fillMaxWidth(),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.SpaceAround
+//                    ) {
+//                        Button(onClick = {
+//                            isExpandedApproved.value = true
+//                            event(MainEvent.GetApprovedTechOperationPrevDay)
+//                        }) {
+//                            Text(text = stringResource(R.string.prev_day))
+//                        }
+//                        Button(onClick = {
+//                            isExpandedApproved.value = true
+//                            event(MainEvent.GetApprovedTechOperationCurrentMonth)
+//                        }) {
+//                            Text(text = stringResource(R.string.current_month))
+//                        }
+//                    }
                     Spacer(modifier = modifier.height(10.dp))
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),

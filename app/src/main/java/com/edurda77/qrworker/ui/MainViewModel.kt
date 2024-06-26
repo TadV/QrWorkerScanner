@@ -10,6 +10,7 @@ import com.edurda77.qrworker.domain.utils.UNKNOWN_ERROR
 import com.edurda77.qrworker.domain.utils.checkConflicts
 import com.edurda77.qrworker.domain.utils.checkConflictsOperations
 import com.edurda77.qrworker.domain.utils.compareLists
+import com.edurda77.qrworker.domain.utils.filterLists
 import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -142,13 +143,24 @@ class MainViewModel @Inject constructor(
                 // Not implemented
             }
 
-            MainEvent.OnSearch -> {
+            is MainEvent.OnSearch -> {
+                val queries = mainEvent.query.split("/").map { it.trim() }
+                println(queries)
+                _state.value.copy(
+                    techOperations = _shadowTechOperations.value.filterLists(queries)
+                )
+                    .updateStateUI()
+
+            }
+
+            MainEvent.OnFilter -> {
                 val currentQueries =  _state.value.filtersQueries
                 _state.value.copy(
                     techOperations = _shadowTechOperations.value.compareLists(currentQueries)
                 )
                     .updateStateUI()
             }
+
             is MainEvent.AddItemInFilteredList -> {
                 val current = _state.value.filtersQueries.toMutableList()
                 current.add("")
@@ -198,12 +210,14 @@ class MainViewModel @Inject constructor(
 
     private fun loadTechOperations() {
         viewModelScope.launch {
+            Log.d("loadTechOperations Before", _state.value.toString())
             val result = workRepository.getTechOperations(
                 codeUser = _state.value.user,
                 numberOPZS = _state.value.opzs
             )
             when (result) {
                 is Resource.Error -> {
+                    Log.d("loadTechOperations Resource.Error", result.toString())
                     _state.value.copy(
                         message = result.message ?: UNKNOWN_ERROR,
                         techOperations = emptyList(),
@@ -212,6 +226,7 @@ class MainViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
+                    Log.d("loadTechOperations Resource.Success", result.data.toString())
                     _shadowTechOperations.value = result.data ?: emptyList()
                     _state.value.copy(
                         // appState = AppState.WorkScan(WorkState.ReadyScanState),

@@ -112,7 +112,7 @@ fun FilterContent(
                         showBottomSheet.value = false
                     }
                 }
-                event(MainEvent.OnSearch)
+                event(MainEvent.OnFilter)
             }) {
             Text(
                 text = stringResource(R.string.apply_filter),

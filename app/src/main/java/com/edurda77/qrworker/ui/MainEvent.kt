@@ -10,7 +10,8 @@ sealed class MainEvent {
     class SelectTechOperation(val techOperation: TechOperation):MainEvent()
     data object UploadForce:MainEvent()
     data object UploadSelectedTechOperations:MainEvent()
-    data object OnSearch :MainEvent()
+    data object OnFilter :MainEvent()
+    class OnSearch(val query:String) :MainEvent()
 
     class UpdateFilteredList(val index: Int, val query:String):MainEvent()
     data object AddItemInFilteredList : MainEvent()
