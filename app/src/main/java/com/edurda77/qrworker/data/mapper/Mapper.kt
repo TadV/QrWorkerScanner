@@ -24,22 +24,35 @@ fun List<TechOperationEntity>.convertToCodesDto(): List<DataServer> {
 fun OperationDto.convertToTechOperations(code: String): List<TechOperation> {
     return this.remoteData.map {
         TechOperation(
-            codeUser = it.codeUser,
-            createdAt = it.createdAt,
             id = it.id,
-            orderData = it.orderData,
-            orderNumber = it.orderNumber,
-            product = it.product,
+            createdAt = it.createdAt,
+
             productionReport = it.productionReport,
-            productionDivision = it.productionDivision,
             techOperation = it.techOperation,
+            techOperationName = it.techOperationName?: "",
+            techOperationNumber = it.techOperationNumber?: "",
+
+            orderNumber = it.orderNumber?: "",
+            orderData = it.orderData?: "",
+
+            productionDivision = it.productionDivision?: "",
+            productionProduct = it.productionProduct?: "",
+            productionProductChar = it.productionProductChar?: "",
+
+            currentUser = it.workerCode ?: "",
+            currentUserFIO = it.workerFIO ?: "",
+
+            workerCode = it.workerCode?: "",
+            workerFIO = it.workerFIO?: "",
+
             techOperationData = it.techOperationData ?: "",
-            techOperationName = it.techOperationName,
-            isUploadedThisUser = code == it.codeUser,
-            currentUser = it.codeUser,
-            currentUserFIO = it.fioUser ?: "",
+            isUploadedThisUser = code == (it.workerCode ?: ""),
+
             quantity = it.quantity,
-            unit = it.unit
+            unit = it.unit,
+            sum = it.sum?: 0f,
+            sumConfirmed = it.sumConfirmed?: 0f,
+
         )
     }
 }
@@ -47,8 +60,8 @@ fun OperationDto.convertToTechOperations(code: String): List<TechOperation> {
 fun List<TechOperation>.convertToUpdateTechOperationBody(): List<UpdateTechOperationBody> {
     return this.map {
         UpdateTechOperationBody(
-            codeUser = it.codeUser,
-            currentUser = it.currentUser,
+            codeUser = it.workerCode!!,
+            currentUser = it.workerFIO!!,
             productionReport = it.productionReport,
             techOperation = it.techOperation,
             techOperationData = getCurrentDateTime()

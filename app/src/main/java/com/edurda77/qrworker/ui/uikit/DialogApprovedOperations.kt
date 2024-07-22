@@ -61,17 +61,19 @@ fun DialogApprovedOperations(
                     Column(
                         modifier = modifier.weight(6f),
                     ) {
-                        Text(
-                            text = operation.techOperationName,
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight(500),
-                                color = grey,
+                        operation.techOperationName?.let {
+                            Text(
+                                text = it,
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight(500),
+                                    color = grey,
+                                )
                             )
-                        )
+                        }
                         Spacer(modifier = modifier.height(10.dp))
                         Text(
-                            text = "${stringResource(R.string.worker)} ${operation.codeUser}",
+                            text = "${stringResource(R.string.worker)} ${operation.workerFIO}",
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight(500),

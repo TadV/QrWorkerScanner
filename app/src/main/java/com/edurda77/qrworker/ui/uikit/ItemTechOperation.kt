@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -27,14 +26,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.edurda77.qrworker.R
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.ui.MainEvent
-import com.edurda77.qrworker.ui.theme.Pink80
-import com.edurda77.qrworker.ui.theme.black
 import com.edurda77.qrworker.ui.theme.grey
 import com.edurda77.qrworker.ui.theme.lightGrey
 import com.edurda77.qrworker.ui.theme.white
@@ -51,14 +47,14 @@ fun ItemTechOperation(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                if (techOperation.codeUser.isBlank() || techOperation.codeUser == user) {
+                if (techOperation.workerCode!!.isBlank() || techOperation.workerCode == user) {
                     event(MainEvent.SelectTechOperation(techOperation))
                 }
             },
         colors = CardDefaults.cardColors(
             containerColor = if (techOperation.isUploadedThisUser) {
                 yellow
-            } else  if (techOperation.codeUser.isBlank() || techOperation.codeUser == user) {
+            } else  if (techOperation.workerCode!!.isBlank() || techOperation.workerCode == user) {
                 white
             } else lightGrey
         ),
@@ -74,22 +70,40 @@ fun ItemTechOperation(
                 .padding(5.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (techOperation.codeUser.isBlank() || techOperation.codeUser == user) {
+            if (techOperation.workerCode!!.isBlank() || techOperation.workerCode == user) {
                 Checkbox(
                     modifier = modifier.weight(1f),
-                    checked = techOperation.codeUser == user, onCheckedChange = {
+                    checked = techOperation.workerCode == user, onCheckedChange = {
                    event(MainEvent.SelectTechOperation(techOperation))
                 })
                 Spacer(modifier = modifier.width(10.dp))
-                Text(
-                    modifier = modifier.weight(6f),
-                    text = techOperation.techOperationName,
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(500),
-                        color = Color.Black,
+                techOperation.techOperationNumber?.let {
+                    Text(
+                        modifier = modifier.weight(6f),
+                        text = it,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color.Black,
+                        )
                     )
+                }
+                VerticalDivider(
+                    modifier = modifier.fillMaxHeight(),
+                    thickness = 2.dp,
+                    color = Color.Black
                 )
+                techOperation.techOperationName?.let {
+                    Text(
+                        modifier = modifier.weight(6f),
+                        text = it,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color.Black,
+                        )
+                    )
+                }
                 //Spacer(modifier = modifier.weight(1f))
                 VerticalDivider(
                     modifier = modifier.fillMaxHeight(),
@@ -132,14 +146,16 @@ fun ItemTechOperation(
                 Column(
                     modifier = modifier.weight(6f),
                 ) {
-                    Text(
-                        text = techOperation.techOperationName,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(500),
-                            color = grey,
+                    techOperation.techOperationName?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight(500),
+                                color = grey,
+                            )
                         )
-                    )
+                    }
                     Spacer(modifier = modifier.height(10.dp))
                     Text(
                         text = "${stringResource(R.string.worker)} ${techOperation.currentUserFIO}",

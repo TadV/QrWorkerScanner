@@ -35,7 +35,7 @@ fun AuthorisationScreen(
     val isEnabledCamera = remember {
         mutableStateOf(false)
     }
-    val qrCodeBounds = remember { mutableStateOf<Rect?>(null) }
+//    val qrCodeBounds = remember { mutableStateOf<Rect?>(null) }
     val window = LocalView.current
     window.keepScreenOn = true
     if (isEnabledCamera.value) {

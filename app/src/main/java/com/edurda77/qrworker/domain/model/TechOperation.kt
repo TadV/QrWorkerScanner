@@ -2,20 +2,32 @@ package com.edurda77.qrworker.domain.model
 
 
 data class TechOperation (
-    val codeUser: String,
-    val createdAt: String,
     val id: Int,
-    val orderData: String,
-    val orderNumber: String,
-    val product: String,
-    val productionDivision: String,
+    val createdAt: String,
+
     val productionReport: String,
     val techOperation: String,
-    val techOperationData: String,
-    val techOperationName: String,
+    val techOperationName: String?,
+    val techOperationNumber: String?,
+
+    val orderNumber: String?,
+    val orderData: String?,
+
+    val productionDivision: String?,
+    val productionProduct: String?,
+    val productionProductChar: String?,
+
+    val currentUser: String?,
+    val currentUserFIO: String?,
+
+    val workerCode: String?,
+    val workerFIO: String?,
+
+    val techOperationData: String?,
     val isUploadedThisUser: Boolean,
-    val currentUser: String,
-    val currentUserFIO: String,
-    val quantity: Int,
+
+    val quantity: Int?,
     val unit: String?,
+    val sum: Float?,
+    val sumConfirmed: Float?,
 )

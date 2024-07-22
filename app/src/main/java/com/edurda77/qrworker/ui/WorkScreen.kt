@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -76,7 +75,7 @@ fun WorkScreen(
     BackHandler {
         event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
     }
-    var query = remember { mutableStateOf("") }
+    val query = remember { mutableStateOf("") }
     val isExpanded = remember { mutableStateOf(false) }
     val isExpandedApproved = remember { mutableStateOf(false) }
     val showBottomSheet = remember { mutableStateOf(false) }
@@ -241,17 +240,19 @@ fun WorkScreen(
                             )
                             Spacer(modifier = modifier.height(10.dp))
                             if (techOperations.isNotEmpty()) {
-                                Text(
-                                    text = techOperations.first().productionDivision,
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight(500),
-                                        color = black,
+                                techOperations.first().productionDivision?.let {
+                                    Text(
+                                        text = it,
+                                        style = TextStyle(
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight(500),
+                                            color = black,
+                                        )
                                     )
-                                )
+                                }
                                 Spacer(modifier = modifier.height(5.dp))
                                 Text(
-                                    text = techOperations.first().orderData.selectDate(),
+                                    text = techOperations.first().orderData!!.selectDate(),
                                     style = TextStyle(
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight(500),

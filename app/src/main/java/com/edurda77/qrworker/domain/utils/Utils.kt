@@ -40,7 +40,7 @@ fun checkConflicts(
     localOperations: List<LocalTechOperation>
 ): Boolean {
     localOperations.forEach { localOperation ->
-        return remoteOperations.find { it.id == localOperation.id && it.codeUser != localOperation.codeUser } != null
+        return remoteOperations.find { it.id == localOperation.id && it.workerCode != localOperation.codeUser } != null
     }
     return false
 }
@@ -51,7 +51,7 @@ fun checkConflictsOperations(
 ): List<TechOperation> {
     val conflictOperations = mutableListOf<TechOperation>()
     localOperations.forEach { localOperation ->
-        if (remoteOperations.find { it.id == localOperation.id && it.codeUser != localOperation.codeUser } != null) {
+        if (remoteOperations.find { it.id == localOperation.id && it.workerCode != localOperation.codeUser } != null) {
             conflictOperations.add(remoteOperations.first { it.id == localOperation.id })
         }
     }
@@ -59,6 +59,6 @@ fun checkConflictsOperations(
 }
 
 fun List<TechOperation>.compareLists(fooApiList: List<String>) = filter { m -> fooApiList.any { m.techOperation.contains(it, ignoreCase = true) } }
-fun List<TechOperation>.filterLists(fooApiList: List<String>) = filter { m -> fooApiList.any { m.techOperationName.contains(it, ignoreCase = true) } }
+fun List<TechOperation>.filterLists(fooApiList: List<String>) = filter { m -> fooApiList.any { m.techOperationName!!.contains(it, ignoreCase = true) || m.techOperationNumber!!.contains(it, ignoreCase = true) } }
 
 

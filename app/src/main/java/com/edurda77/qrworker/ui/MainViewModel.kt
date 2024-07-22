@@ -271,11 +271,11 @@ class MainViewModel @Inject constructor(
             oldTechOperations.indexOf(oldTechOperations.firstOrNull { it == techOperation })
         val oldTechOperation = _state.value.techOperations[index]
         val newTechOperation =
-            if (oldTechOperation.codeUser.isBlank()) oldTechOperation.copy(
-                codeUser = _state.value.user,
+            if (oldTechOperation.workerCode!!.isBlank()) oldTechOperation.copy(
+                workerCode = _state.value.user,
                 currentUser = _state.value.user
             ) else oldTechOperation.copy(
-                codeUser = "",
+                workerCode = "",
                 currentUser = _state.value.user
             )
         val oldOperations = _state.value.techOperations.toMutableList()
