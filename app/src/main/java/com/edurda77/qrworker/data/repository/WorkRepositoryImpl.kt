@@ -8,11 +8,13 @@ import com.edurda77.qrworker.data.local.TechOperationEntity
 import com.edurda77.qrworker.data.mapper.convertToCodesDto
 import com.edurda77.qrworker.data.mapper.convertToLocalTechOperation
 import com.edurda77.qrworker.data.mapper.convertToLocalTechOperations
+import com.edurda77.qrworker.data.mapper.convertToLocalUser
 import com.edurda77.qrworker.data.mapper.convertToTechOperations
 import com.edurda77.qrworker.data.mapper.convertToUpdateTechOperationBody
 import com.edurda77.qrworker.data.remote.ApiServer
 import com.edurda77.qrworker.data.remote.RemoteWorkerDto
 import com.edurda77.qrworker.domain.model.LocalTechOperation
+import com.edurda77.qrworker.domain.model.LocalUser
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
 import com.edurda77.qrworker.domain.utils.Resource
@@ -173,4 +175,19 @@ class WorkRepositoryImpl @Inject constructor(
 
     private fun saveDate(date: String) =
         sharedPref.edit().putString(SHARED_DATE, date).apply()
+
+    override suspend fun getCurrentUser(): Resource<LocalUser?> {
+        return try {
+            val result = dao.getCurrentUser()
+            Resource.Success(result.convertToLocalUser())
+        } catch (e: Exception) {
+            Log.d("Test repository", "error $e")
+            Resource.Error(message = e.message ?: UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun saveCurrentUser(user: LocalUser) {
+        dao.disableUsers()
+        dao.addUser(user.userCode, user.userName, 1)
+    }
 }

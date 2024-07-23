@@ -73,13 +73,15 @@ fun ItemTechOperation(
             if (techOperation.workerCode!!.isBlank() || techOperation.workerCode == user) {
                 Checkbox(
                     modifier = modifier.weight(1f),
-                    checked = techOperation.workerCode == user, onCheckedChange = {
-                   event(MainEvent.SelectTechOperation(techOperation))
-                })
-                Spacer(modifier = modifier.width(10.dp))
+                    checked = techOperation.workerCode == user,
+                    onCheckedChange = {
+                    event(MainEvent.SelectTechOperation(techOperation))
+                    }
+                )
+                Spacer(modifier = modifier.width(2.dp))
                 techOperation.techOperationNumber?.let {
                     Text(
-                        modifier = modifier.weight(6f),
+//                        modifier = modifier.weight(1f),
                         text = it,
                         style = TextStyle(
                             fontSize = 16.sp,
@@ -88,14 +90,16 @@ fun ItemTechOperation(
                         )
                     )
                 }
+                Spacer(modifier = modifier.width(2.dp))
                 VerticalDivider(
                     modifier = modifier.fillMaxHeight(),
                     thickness = 2.dp,
-                    color = Color.Black
+                    color = Color.Gray
                 )
+                Spacer(modifier = modifier.width(2.dp))
                 techOperation.techOperationName?.let {
                     Text(
-                        modifier = modifier.weight(6f),
+                        modifier = modifier.weight(8f),
                         text = it,
                         style = TextStyle(
                             fontSize = 16.sp,
@@ -104,13 +108,13 @@ fun ItemTechOperation(
                         )
                     )
                 }
-                //Spacer(modifier = modifier.weight(1f))
+                Spacer(modifier = modifier.width(2.dp))
                 VerticalDivider(
                     modifier = modifier.fillMaxHeight(),
                     thickness = 2.dp,
-                    color = Color.Black
+                    color = Color.Gray
                 )
-                Spacer(modifier = modifier.width(5.dp))
+                Spacer(modifier = modifier.width(2.dp))
                 Column(
                     modifier = modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally

@@ -67,6 +67,7 @@ fun WorkScreen(
     conflictTechOperations: List<TechOperation>,
     filtersQueries: List<String>,
     user: String,
+    userName: String,
     message: String,
     workState: WorkState,
     isConflict:Boolean,
@@ -156,31 +157,34 @@ fun WorkScreen(
                     .fillMaxSize(),
                 containerColor = lightBlue,
                 bottomBar = {
-                    Row(
-                        modifier = modifier.fillMaxWidth().padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Button(
-                            modifier = modifier.weight(5f),
-                            colors = ButtonDefaults.buttonColors(
-                                disabledContainerColor = blue.copy(alpha = 0.5f),
-                                containerColor = blue
-                            ),
-                            enabled = techOperations.isNotEmpty(),
-                            contentPadding = PaddingValues(vertical = 10.dp),
-                            shape = RoundedCornerShape(15.dp),
-                            onClick = {
-                                event(MainEvent.UploadSelectedTechOperations)
-                            }) {
-                            Text(
-                                text = stringResource(R.string.confirm),
-                                style = TextStyle(
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight(700),
-                                    color = white,
+                    if (techOperations.isNotEmpty()) {
+                        Row(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Button(
+                                modifier = modifier.weight(5f),
+                                colors = ButtonDefaults.buttonColors(
+                                    disabledContainerColor = blue.copy(alpha = 0.5f),
+                                    containerColor = blue
+                                ),
+                                enabled = techOperations.isNotEmpty(),
+                                contentPadding = PaddingValues(vertical = 10.dp),
+                                shape = RoundedCornerShape(15.dp),
+                                onClick = {
+                                    event(MainEvent.UploadSelectedTechOperations)
+                                }) {
+                                Text(
+                                    text = stringResource(R.string.confirm),
+                                    style = TextStyle(
+                                        fontSize = 28.sp,
+                                        fontWeight = FontWeight(700),
+                                        color = white,
+                                    )
                                 )
-                            )
-                        }
+                            }
 //                        Spacer(modifier = modifier.width(5.dp))
 //                        IconButton(
 //                            modifier = modifier.size(60.dp),
@@ -196,6 +200,7 @@ fun WorkScreen(
 //                                tint = black
 //                            )
 //                        }
+                        }
                     }
                 }
             ) { paddings ->
@@ -226,6 +231,20 @@ fun WorkScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        Text(
+                            text = userName,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight(700),
+                                color = black,
+                            )
+                        )
+                    }
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Column(
                             modifier = modifier.weight(1f),
                         ) {
@@ -233,7 +252,7 @@ fun WorkScreen(
                             Text(
                                 text = "${stringResource(R.string.order)} $orderNumber",
                                 style = TextStyle(
-                                    fontSize = 28.sp,
+                                    fontSize = 24.sp,
                                     fontWeight = FontWeight(700),
                                     color = black,
                                 )
@@ -244,7 +263,7 @@ fun WorkScreen(
                                     Text(
                                         text = it,
                                         style = TextStyle(
-                                            fontSize = 16.sp,
+                                            fontSize = 12.sp,
                                             fontWeight = FontWeight(500),
                                             color = black,
                                         )
@@ -254,7 +273,7 @@ fun WorkScreen(
                                 Text(
                                     text = techOperations.first().orderData!!.selectDate(),
                                     style = TextStyle(
-                                        fontSize = 16.sp,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight(500),
                                         color = grey,
                                     )

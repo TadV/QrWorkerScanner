@@ -1,10 +1,12 @@
 package com.edurda77.qrworker.data.mapper
 
+import com.edurda77.qrworker.data.local.CurrentUserEntity
 import com.edurda77.qrworker.data.local.TechOperationEntity
 import com.edurda77.qrworker.data.remote.DataServer
 import com.edurda77.qrworker.data.remote.OperationDto
 import com.edurda77.qrworker.data.remote.UpdateTechOperationBody
 import com.edurda77.qrworker.domain.model.LocalTechOperation
+import com.edurda77.qrworker.domain.model.LocalUser
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.utils.getCurrentDateTime
 
@@ -89,4 +91,13 @@ fun List<TechOperationEntity>.convertToLocalTechOperations(): List<LocalTechOper
             timeOfChoose = it.timeOfChoose
         )
     }
+}
+
+
+
+fun CurrentUserEntity?.convertToLocalUser(): LocalUser? {
+    return if (this != null) LocalUser(
+        userCode,
+        userName,
+    ) else null
 }

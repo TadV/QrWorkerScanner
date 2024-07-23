@@ -28,6 +28,7 @@ class MainViewModel @Inject constructor(
     private val _shadowTechOperations = MutableStateFlow<List<TechOperation>>(emptyList())
 
     init {
+        checkSavedUser()
         loadLocalTechOperations()
     }
 
@@ -48,10 +49,12 @@ class MainViewModel @Inject constructor(
                             is Resource.Success -> {
                                 if (result.data != null) {
                                     println(result.data)
-//                                    _state.value.copy(
-//                                        userName = ,
-//                                    )
-//                                        .updateStateUI()
+                                    result.data.dataServer?.let {
+                                        _state.value.copy(
+                                            userName = it.workerFio,
+                                        )
+                                            .updateStateUI()
+                                    }
                                 }
                             }
                         }
@@ -202,6 +205,26 @@ class MainViewModel @Inject constructor(
                     filtersQueries = current,
                 )
                     .updateStateUI()
+            }
+        }
+    }
+
+    private fun checkSavedUser() {
+        viewModelScope.launch {
+            when (val result = workRepository.getCurrentUser()) {
+                is Resource.Error -> {
+
+                }
+
+                is Resource.Success -> {
+                    result.data?.let {
+                        _state.value.copy(
+                            appState = AppState.WorkScan(WorkState.ReadyScanState),
+                            user = it.userCode,
+                            userName = it.userName
+                        )
+                    }
+                }
             }
         }
     }

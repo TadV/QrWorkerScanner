@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [TechOperationEntity::class],
+    entities = [TechOperationEntity::class, CurrentUserEntity::class],
     version = 1
 )
 abstract class CodeDatabase: RoomDatabase() {

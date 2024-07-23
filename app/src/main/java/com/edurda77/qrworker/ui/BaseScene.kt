@@ -19,6 +19,7 @@ fun BaseScene(
                 message = state.value.message,
                 workState = result.workState,
                 user = state.value.user,
+                userName = state.value.userName,
                 isConflict = state.value.isConflict,
                 filtersQueries = state.value.filtersQueries,
                 approvedTechOperations = state.value.approvedTechOperations,
