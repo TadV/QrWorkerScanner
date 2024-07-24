@@ -20,6 +20,7 @@ import android.view.WindowManager
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Постоянная подсветка экрана
 //        this@MainActivity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         //enableEdgeToEdge()
         setContent {

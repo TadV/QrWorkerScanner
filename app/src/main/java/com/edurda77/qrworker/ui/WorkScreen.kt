@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,7 +50,6 @@ import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.utils.selectDate
 import com.edurda77.qrworker.ui.theme.black
 import com.edurda77.qrworker.ui.theme.blue
-import com.edurda77.qrworker.ui.theme.grey
 import com.edurda77.qrworker.ui.theme.lightBlue
 import com.edurda77.qrworker.ui.theme.lightGrey
 import com.edurda77.qrworker.ui.theme.white
@@ -63,11 +64,14 @@ import com.journeyapps.barcodescanner.ScanOptions
 fun WorkScreen(
     modifier: Modifier = Modifier,
     techOperations: List<TechOperation>,
+    visibleTechOperations: List<TechOperation>,
     approvedTechOperations: List<TechOperation>,
     conflictTechOperations: List<TechOperation>,
     filtersQueries: List<String>,
+    query: String,
     user: String,
     userName: String,
+//    opzsData: OpzsData,
     message: String,
     workState: WorkState,
     isConflict:Boolean,
@@ -76,7 +80,8 @@ fun WorkScreen(
     BackHandler {
         event(MainEvent.ChangeAppState(AppState.WorkScan(WorkState.ReadyScanState)))
     }
-    val query = remember { mutableStateOf("") }
+    val expandTechOpData = remember { mutableStateOf(false) }
+    val count = remember { mutableIntStateOf(0) }
     val isExpanded = remember { mutableStateOf(false) }
     val isExpandedApproved = remember { mutableStateOf(false) }
     val showBottomSheet = remember { mutableStateOf(false) }
@@ -237,7 +242,15 @@ fun WorkScreen(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight(700),
                                 color = black,
-                            )
+                            ),
+                            modifier = Modifier.clickable {
+                                count.intValue ++
+                                if (count.intValue == 2) {
+                                    count.intValue = 0
+                                    event(MainEvent.LogOut)
+                                }
+                            }
+
                         )
                     }
                     Row(
@@ -248,17 +261,8 @@ fun WorkScreen(
                         Column(
                             modifier = modifier.weight(1f),
                         ) {
-                            val orderNumber = if (techOperations.isNotEmpty()) techOperations.first().orderNumber else ""
-                            Text(
-                                text = "${stringResource(R.string.order)} $orderNumber",
-                                style = TextStyle(
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight(700),
-                                    color = black,
-                                )
-                            )
-                            Spacer(modifier = modifier.height(10.dp))
                             if (techOperations.isNotEmpty()) {
+                                Spacer(modifier = modifier.height(5.dp))
                                 techOperations.first().productionDivision?.let {
                                     Text(
                                         text = it,
@@ -269,16 +273,91 @@ fun WorkScreen(
                                         )
                                     )
                                 }
-                                Spacer(modifier = modifier.height(5.dp))
-                                Text(
-                                    text = techOperations.first().orderData!!.selectDate(),
-                                    style = TextStyle(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight(500),
-                                        color = grey,
-                                    )
-                                )
                             }
+                            var orderText = "Отсканируйте ОПЗС"
+                            var fontSize = 26.sp
+                            if (techOperations.isNotEmpty()) {
+                                orderText = "${stringResource(R.string.order)} ${techOperations.first().orderNumber} ${techOperations.first().orderData!!.selectDate()}"
+                                fontSize = 12.sp
+                            }
+                            Text(
+                                text = orderText,
+                                style = TextStyle(
+                                    fontSize = fontSize,
+                                    fontWeight = FontWeight(700),
+                                    color = black,
+                                ),
+                                modifier = Modifier.clickable {
+                                    expandTechOpData.value = !expandTechOpData.value
+                                }
+                            )
+
+                            if (techOperations.isNotEmpty()) {
+                                Spacer(modifier = modifier.height(5.dp))
+                                Row(
+                                    modifier = modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = modifier.weight(1f)
+                                    ) {
+                                        if (expandTechOpData.value) {
+                                            techOperations.first().orderProduct?.let {
+                                                Text(
+                                                    text = it, // "Номенклатура заказа",
+                                                    style = TextStyle(
+                                                        fontSize = 14.sp,
+                                                        fontWeight = FontWeight(500),
+                                                        color = black,
+                                                    )
+                                                )
+                                            }
+                                            techOperations.first().orderProductChar?.let {
+                                                Text(
+                                                    text = it,//"Характеристика номенклатуры",
+                                                    style = TextStyle(
+                                                        fontSize = 14.sp,
+                                                        fontWeight = FontWeight(500),
+                                                        color = black,
+                                                    )
+                                                )
+                                            }
+                                            Spacer(modifier = modifier.height(2.dp))
+                                        }
+                                        techOperations.first().productionProduct?.let {
+                                            Text(
+                                                text = it,//"Выходное изделие",
+                                                style = TextStyle(
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight(500),
+                                                    color = black,
+                                                )
+                                            )
+                                        }
+                                        techOperations.first().productionProductChar?.let {
+                                            Text(
+                                                text = it,//"Характеристика выходного изделия",
+                                                style = TextStyle(
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight(500),
+                                                    color = black,
+                                                ))
+                                        }
+                                    }
+                                }
+                            }
+//                            if (techOperations.isNotEmpty()) {
+//                                Text(
+//                                    text = techOperations.first().orderData!!.selectDate(),
+//                                    style = TextStyle(
+//                                        fontSize = 12.sp,
+//                                        fontWeight = FontWeight(500),
+//                                        color = grey,
+//                                    )
+//                                )
+//                                Spacer(modifier = modifier.height(10.dp))
+//                            }
                         }
                         IconButton(
                             modifier = modifier.size(70.dp),
@@ -305,28 +384,30 @@ fun WorkScreen(
                             Text(text = stringResource(R.string.upload_data))
                         }*/
                     }
-                    Spacer(modifier = modifier.height(10.dp))
-                    OutlinedTextField(
-                        modifier = modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(25.dp),
-                        textStyle = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(500),
-                            color = black,
-                        ),
-                        trailingIcon = {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_search_24),
-                                contentDescription = "",
-                                tint = black
-                            )
-                        },
-                        value = query.value,
-                        onValueChange = {
-                            query.value = it
-                            event(MainEvent.OnSearch(it))
-                        }
-                    )
+                    if (techOperations.isNotEmpty()) {
+                        Spacer(modifier = modifier.height(10.dp))
+                        OutlinedTextField(
+                            modifier = modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(25.dp),
+                            textStyle = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight(500),
+                                color = black,
+                            ),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_search_24),
+                                    contentDescription = "",
+                                    tint = black
+                                )
+                            },
+                            value = query,
+                            onValueChange = {
+                                event(MainEvent.OnSearch(it))
+                            },
+                            placeholder = { Text("Можно искать несколько слов через слеш /", fontSize = 10.sp) },
+                        )
+                    }
                     /*if (isConflict) {
                         Spacer(modifier = modifier.height(10.dp))
                         IconButton(
@@ -360,11 +441,20 @@ fun WorkScreen(
 //                        }
 //                    }
                     Spacer(modifier = modifier.height(10.dp))
+                    if (query != "" && visibleTechOperations.isEmpty() && techOperations.isNotEmpty()) {
+                        Text(
+                            text = "Ничего не найдено! Измените поиск",
+//                            fontSize = 28.sp,
+                            fontWeight = FontWeight(700),
+                        )
+                    }
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        items(techOperations) { operation ->
+                        items(
+                            if (query == "") techOperations else visibleTechOperations
+                        ) { operation ->
                             ItemTechOperation(
                                 user = user,
                                 techOperation = operation,

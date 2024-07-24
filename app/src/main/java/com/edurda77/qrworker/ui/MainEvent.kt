@@ -18,4 +18,5 @@ sealed class MainEvent {
     class DeleteItemFromFilterList(val index: Int):MainEvent()
     data object GetApprovedTechOperationPrevDay:MainEvent()
     data object GetApprovedTechOperationCurrentMonth:MainEvent()
+    data object LogOut: MainEvent()
 }

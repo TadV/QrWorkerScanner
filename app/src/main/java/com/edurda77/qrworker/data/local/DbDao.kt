@@ -36,7 +36,7 @@ interface DbDao {
     suspend fun disableUsers()
     @Query("UPDATE users SET active = 1 WHERE user_code = :userCode")
     suspend fun setActiveUser(userCode:String)
-    @Query("INSERT INTO users (user_code, user_name, active) VALUES (:userCode, :userName, :active)")
+    @Query("INSERT OR REPLACE INTO users (user_code, user_name, active) VALUES (:userCode, :userName, :active) ")
     suspend fun addUser(userCode:String, userName:String, active:Int)
     @Query("SELECT * FROM users WHERE active = 1 LIMIT 1")
     suspend fun getCurrentUser(): CurrentUserEntity

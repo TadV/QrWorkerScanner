@@ -17,7 +17,7 @@ interface ApiServer {
     suspend fun getWorkerFio (@Path("worker_code") workerCode:String):RemoteWorkerDto
 
     @GET("tech-operations/{production_report}")
-    suspend fun getTechOperations (@Path("production_report") orderNumber:String):OperationDto
+    suspend fun getTechOperations (@Path("production_report") productionReport:String):OperationDto
 
     @POST ("tech-operations")
     suspend fun updateTechOperations(@Body techOperations: List<UpdateTechOperationBody>): UnswerUpdateTechOperationDto

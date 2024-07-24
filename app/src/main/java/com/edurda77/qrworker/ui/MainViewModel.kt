@@ -3,6 +3,8 @@ package com.edurda77.qrworker.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.query
+import com.edurda77.qrworker.domain.model.LocalUser
 import com.edurda77.qrworker.domain.model.TechOperation
 import com.edurda77.qrworker.domain.repository.WorkRepository
 import com.edurda77.qrworker.domain.utils.Resource
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,19 +52,29 @@ class MainViewModel @Inject constructor(
                             is Resource.Success -> {
                                 if (result.data != null) {
                                     println(result.data)
+
                                     result.data.dataServer?.let {
                                         _state.value.copy(
+                                            appState = AppState.WorkScan(WorkState.ReadyScanState),
+                                            user = it.workerCode,
                                             userName = it.workerFio,
                                         )
                                             .updateStateUI()
+                                        workRepository.saveCurrentUser(LocalUser(it.workerCode, it.workerFio))
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+
+            is MainEvent.LogOut -> {
+                viewModelScope.launch {
+                    workRepository.logOut()
+
                     _state.value.copy(
-                        appState = AppState.WorkScan(WorkState.ReadyScanState),
-                        user = mainEvent.userNumber
+                        appState = AppState.Authorization(AuthorizationState.EnterState),
                     )
                         .updateStateUI()
                 }
@@ -119,8 +132,11 @@ class MainViewModel @Inject constructor(
                         techOperation = mainEvent.techOperation,
                         oldTechOperations = _shadowTechOperations.value
                     )
+
+                    val queries = _state.value.query.split("/").map { it.trim() }
                     _state.value.copy(
                         techOperations = _shadowTechOperations.value,
+                        visibleTechOperations = _shadowTechOperations.value.filterLists(queries),
                     )
                         .updateStateUI()
                 }
@@ -165,9 +181,9 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.OnSearch -> {
                 val queries = mainEvent.query.split("/").map { it.trim() }
-                println(queries)
                 _state.value.copy(
-                    techOperations = _shadowTechOperations.value.filterLists(queries)
+                    query = mainEvent.query,
+                    visibleTechOperations = _shadowTechOperations.value.filterLists(queries)
                 )
                     .updateStateUI()
 
@@ -210,7 +226,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun checkSavedUser() {
-        viewModelScope.launch {
+        runBlocking {
             when (val result = workRepository.getCurrentUser()) {
                 is Resource.Error -> {
 
@@ -218,11 +234,13 @@ class MainViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     result.data?.let {
+                        Log.d("Load Saved User", it.toString())
                         _state.value.copy(
                             appState = AppState.WorkScan(WorkState.ReadyScanState),
                             user = it.userCode,
                             userName = it.userName
                         )
+                            .updateStateUI()
                     }
                 }
             }
@@ -252,15 +270,19 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("loadTechOperations Before", _state.value.toString())
             val result = workRepository.getTechOperations(
-                codeUser = _state.value.user,
+                currentUserCode = _state.value.user,
+                currentUserName = _state.value.userName,
                 numberOPZS = _state.value.opzs
             )
             when (result) {
                 is Resource.Error -> {
                     Log.d("loadTechOperations Resource.Error", result.toString())
+                    _shadowTechOperations.value = emptyList()
+
                     _state.value.copy(
                         message = result.message ?: UNKNOWN_ERROR,
                         techOperations = emptyList(),
+                        visibleTechOperations = emptyList(),
                     )
                         .updateStateUI()
                 }
@@ -268,7 +290,10 @@ class MainViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("loadTechOperations Resource.Success", result.data.toString())
                     _shadowTechOperations.value = result.data ?: emptyList()
+
+                    val queries = _state.value.query.split("/").map { it.trim() }
                     _state.value.copy(
+                        visibleTechOperations = _shadowTechOperations.value.filterLists(queries),
                         // appState = AppState.WorkScan(WorkState.ReadyScanState),
                         techOperations = result.data ?: emptyList(),
                         isConflict = checkConflicts(
@@ -291,20 +316,26 @@ class MainViewModel @Inject constructor(
         oldTechOperations: List<TechOperation>
     ): List<TechOperation> {
         val index =
-            oldTechOperations.indexOf(oldTechOperations.firstOrNull { it == techOperation })
-        val oldTechOperation = _state.value.techOperations[index]
-        val newTechOperation =
-            if (oldTechOperation.workerCode!!.isBlank()) oldTechOperation.copy(
-                workerCode = _state.value.user,
-                currentUser = _state.value.user
-            ) else oldTechOperation.copy(
-                workerCode = "",
-                currentUser = _state.value.user
-            )
-        val oldOperations = _state.value.techOperations.toMutableList()
-        oldOperations.removeAt(index)
-        oldOperations.add(index, newTechOperation)
-        return oldOperations
+            oldTechOperations.indexOf(oldTechOperations.firstOrNull { it.id == techOperation.id })
+        Log.d("updateVisibleTechOperations", oldTechOperations.toString())
+        Log.d("updateVisibleTechOperations", techOperation.toString())
+        Log.d("updateVisibleTechOperations", index.toString())
+        if (index >= 0) {
+            val oldTechOperation = _state.value.techOperations[index]
+            val newTechOperation =
+                if (oldTechOperation.workerCode!!.isBlank()) oldTechOperation.copy(
+                    workerCode = _state.value.user,
+                    currentUser = _state.value.user
+                ) else oldTechOperation.copy(
+                    workerCode = "",
+                    currentUser = _state.value.user
+                )
+            val oldOperations = _state.value.techOperations.toMutableList()
+            oldOperations.removeAt(index)
+            oldOperations.add(index, newTechOperation)
+            return oldOperations
+        }
+        return oldTechOperations
     }
 
 

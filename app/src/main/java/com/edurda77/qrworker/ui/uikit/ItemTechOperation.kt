@@ -1,5 +1,7 @@
 package com.edurda77.qrworker.ui.uikit
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -43,6 +45,7 @@ fun ItemTechOperation(
     techOperation: TechOperation,
     event: (MainEvent) -> Unit,
 ) {
+    techOperation.techOperationName?.let { Log.d("techOperationName", it) }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -78,10 +81,10 @@ fun ItemTechOperation(
                     event(MainEvent.SelectTechOperation(techOperation))
                     }
                 )
-                Spacer(modifier = modifier.width(2.dp))
+                Spacer(modifier = modifier.width(3.dp))
                 techOperation.techOperationNumber?.let {
                     Text(
-//                        modifier = modifier.weight(1f),
+                        modifier = modifier.weight(1f),
                         text = it,
                         style = TextStyle(
                             fontSize = 16.sp,
@@ -90,23 +93,34 @@ fun ItemTechOperation(
                         )
                     )
                 }
-                Spacer(modifier = modifier.width(2.dp))
+                Spacer(modifier = modifier.width(3.dp))
                 VerticalDivider(
                     modifier = modifier.fillMaxHeight(),
                     thickness = 2.dp,
                     color = Color.Gray
                 )
-                Spacer(modifier = modifier.width(2.dp))
-                techOperation.techOperationName?.let {
-                    Text(
-                        modifier = modifier.weight(8f),
-                        text = it,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color.Black,
+                Spacer(modifier = modifier.width(5.dp))
+                Column(
+                    modifier = modifier.weight(8f),
+                ) {
+                    techOperation.techOperationName?.let {
+                        var techName = techOperation.techOperationName
+                        if (techOperation.techOperationNumber != null) {
+                            val number = techOperation.techOperationNumber
+                            val regex = """^$number""".toRegex()
+                            techName =
+                                techOperation.techOperationName.replaceFirst(regex, "").trim()
+                        }
+                        Text(
+                            modifier = modifier.weight(10f),
+                            text = techName,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight(500),
+                                color = Color.Black,
+                            )
                         )
-                    )
+                    }
                 }
                 Spacer(modifier = modifier.width(2.dp))
                 VerticalDivider(
@@ -146,7 +160,25 @@ fun ItemTechOperation(
                     contentDescription = "",
                     tint = grey
                 )
-                Spacer(modifier = modifier.width(10.dp))
+                Spacer(modifier = modifier.width(3.dp))
+                techOperation.techOperationNumber?.let {
+                    Text(
+                        modifier = modifier.weight(1f),
+                        text = it,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color.Black,
+                        )
+                    )
+                }
+                Spacer(modifier = modifier.width(3.dp))
+                VerticalDivider(
+                    modifier = modifier.fillMaxHeight(),
+                    thickness = 2.dp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = modifier.width(5.dp))
                 Column(
                     modifier = modifier.weight(6f),
                 ) {
@@ -162,7 +194,7 @@ fun ItemTechOperation(
                     }
                     Spacer(modifier = modifier.height(10.dp))
                     Text(
-                        text = "${stringResource(R.string.worker)} ${techOperation.currentUserFIO}",
+                        text = "${stringResource(R.string.worker)} ${techOperation.workerFIO}",
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight(500),

@@ -17,10 +17,14 @@ data class RemoteData(
     @SerializedName("tech_operation_number")
     val techOperationNumber: String?,
 
-    @SerializedName("order_data")
-    val orderData: String?,
     @SerializedName("order_number")
     val orderNumber: String?,
+    @SerializedName("order_data")
+    val orderData: String?,
+    @SerializedName("order_product")
+    val orderProduct: String?,
+    @SerializedName("order_product_char")
+    val orderProductChar: String?,
 
     @SerializedName("production_division")
     val productionDivision: String?,
@@ -29,7 +33,7 @@ data class RemoteData(
     @SerializedName("production_product_char")
     val productionProductChar: String?,
 
-    @SerializedName("worker_user")
+    @SerializedName("worker_code")
     val workerCode: String?,
     @SerializedName("worker_fio")
     val workerFIO: String?,

@@ -23,7 +23,8 @@ interface WorkRepository {
     suspend fun forceUploadData()
     suspend fun getTechOperations(
         numberOPZS: String,
-        codeUser: String
+        currentUserCode: String,
+        currentUserName: String,
     ): Resource<List<TechOperation>>
 
     suspend fun updateTechOperations(techOperations: List<TechOperation>): Resource<Boolean>
@@ -31,6 +32,8 @@ interface WorkRepository {
     suspend fun getAllLocalOperations(): Flow<Resource<List<LocalTechOperation>>>
 
     suspend fun getCurrentUser(): Resource<LocalUser?>
-
     suspend fun saveCurrentUser(user: LocalUser)
+    suspend fun logOut()
+
+
 }

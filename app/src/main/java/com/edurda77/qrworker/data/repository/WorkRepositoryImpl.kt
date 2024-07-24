@@ -142,15 +142,17 @@ class WorkRepositoryImpl @Inject constructor(
 
     override suspend fun getTechOperations(
         numberOPZS: String,
-        codeUser: String,
+        currentUserCode: String,
+        currentUserName: String,
     ): Resource<List<TechOperation>> {
         return try {
             val result = apiServer.getTechOperations(numberOPZS)
-            Log.d("Test repository", "result tech opert $result")
-            Resource.Success(result.convertToTechOperations(codeUser))
+            Log.d("getTechOperations", "Result: $result")
+            Resource.Success(result.convertToTechOperations(currentUserCode, currentUserName))
         } catch (e: Exception) {
-            Log.d("Test repository", "error $e")
-            Resource.Error(message = e.message ?: UNKNOWN_ERROR)
+            Log.d("getTechOperations", "Error: $e")
+//            Resource.Error(message = e.message ?: UNKNOWN_ERROR)
+            Resource.Error(message = "ОПЗС не найдена")
         }
     }
 
@@ -181,7 +183,7 @@ class WorkRepositoryImpl @Inject constructor(
             val result = dao.getCurrentUser()
             Resource.Success(result.convertToLocalUser())
         } catch (e: Exception) {
-            Log.d("Test repository", "error $e")
+            Log.d("getCurrentUser", "error $e")
             Resource.Error(message = e.message ?: UNKNOWN_ERROR)
         }
     }
@@ -189,5 +191,9 @@ class WorkRepositoryImpl @Inject constructor(
     override suspend fun saveCurrentUser(user: LocalUser) {
         dao.disableUsers()
         dao.addUser(user.userCode, user.userName, 1)
+    }
+
+    override suspend fun logOut() {
+        dao.disableUsers()
     }
 }

@@ -13,6 +13,8 @@ data class TechOperation (
     val orderNumber: String?,
     val orderData: String?,
 
+    val orderProduct: String?,
+    val orderProductChar: String?,
     val productionDivision: String?,
     val productionProduct: String?,
     val productionProductChar: String?,

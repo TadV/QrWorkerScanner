@@ -13,8 +13,8 @@ android {
         applicationId = "com.edurda77.qrworker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "0.0.1"
+        versionCode = 7
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

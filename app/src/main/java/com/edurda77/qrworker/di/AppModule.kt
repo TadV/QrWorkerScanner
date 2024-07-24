@@ -24,6 +24,7 @@ object AppModule {
             CodeDatabase::class.java,
             DB
         )
+            .fallbackToDestructiveMigration()
             .build()
     }
 
